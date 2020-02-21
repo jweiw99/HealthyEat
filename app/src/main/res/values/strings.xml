@@ -1,3 +1,23 @@
 <resources>
     <string name="app_name">HealthyEat</string>
+
+    <string-array name="genders">
+        <item>Male</item>
+        <item>Female</item>
+    </string-array>
+
+    <string-array name="weight_goal">
+        <item>Bulk up!</item>
+        <item>Cut fat!</item>
+        <item>Maintain!</item>
+    </string-array>
+
+    <string-array name="activity_level">
+        <item>Sedentary</item>
+        <item>Lightly Active</item>
+        <item>Moderately Active</item>
+        <item>Very Active</item>
+        <item>Highly Active</item>
+    </string-array>
+
 </resources>
