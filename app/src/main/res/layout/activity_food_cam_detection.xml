@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".FoodCamDetection"
+    android:id="@+id/foodCamBody">
+
+    <TextView
+        android:id="@+id/foodName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="Food Name"
+        android:textAllCaps="true"
+        android:textSize="18dp"
+        android:textStyle="bold" />
+
+
+    <TextView
+        android:id="@+id/predictfoodName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/foodName"
+        android:layout_centerHorizontal="true"
+        android:layout_marginRight="5dp"
+        android:layout_marginBottom="5dp"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="Food Name"
+        android:textAllCaps="true"
+        android:textSize="18dp"
+        android:textStyle="bold"
+        android:visibility="gone" />
+
+    <ImageView
+        android:id="@+id/image_view"
+        android:layout_width="wrap_content"
+        android:layout_height="300dp"
+        android:layout_below="@id/predictfoodName"
+        android:layout_centerHorizontal="true"
+        android:adjustViewBounds="true"
+        android:src="@drawable/food" />
+
+    <LinearLayout
+        android:id="@+id/buttonss"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/image_view"
+        android:gravity="center"
+        android:orientation="horizontal">
+
+        <Button
+            android:id="@+id/retakeBtn"
+            android:layout_width="120dp"
+            android:layout_height="55dp"
+            android:text="Retake"
+            android:background="@drawable/button"
+            android:layout_marginRight="15dp"
+            style="@style/buttonStyle"/>
+
+        <Button
+            android:id="@+id/predictBtn"
+            android:layout_width="120dp"
+            android:layout_height="55dp"
+            android:text="Predict"
+            android:background="@drawable/button"
+            style="@style/buttonStyle"/>
+
+        <Button
+            android:id="@+id/continueBtn"
+            android:layout_width="120dp"
+            android:layout_height="55dp"
+            android:text="Continue"
+            android:background="@drawable/button"
+            style="@style/buttonStyle"
+            android:visibility="gone" />
+
+    </LinearLayout>
+
+</RelativeLayout>

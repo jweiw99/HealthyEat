@@ -19,7 +19,7 @@ public class MainActivity extends AppCompatActivity {
 
                     switch (menuItem.getItemId()) {
                         case R.id.nav_recipes:
-                            selectedFragment = new MyAccount();
+                            selectedFragment = new Recipe();
                             break;
 
                         case R.id.nav_fridge:
@@ -52,5 +52,9 @@ public class MainActivity extends AppCompatActivity {
         bottomNav.setOnNavigationItemSelectedListener(navListener);
         // start up recipeFragment with fragmentManager
         FragmentManager fm = this.getSupportFragmentManager();
+
+        Recipe recipeFrag = new Recipe();
+        // start transaction
+        fm.beginTransaction().replace(R.id.fragment_container, recipeFrag).commit();
     }
 }
