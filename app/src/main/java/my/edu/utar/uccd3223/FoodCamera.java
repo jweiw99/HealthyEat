@@ -23,6 +23,7 @@ import android.view.TextureView;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import java.io.File;
 
@@ -44,20 +45,44 @@ public class FoodCamera extends AppCompatActivity implements LifecycleOwner {
         lifecycleRegistry = new LifecycleRegistry(this);
         lifecycleRegistry.markState(Lifecycle.State.CREATED);
 
-        takePictureButton =  findViewById(R.id.btn_takepicture);
+        takePictureButton = findViewById(R.id.btn_takepicture);
 
         assert takePictureButton != null;
         upload = findViewById(R.id.btn_upload);
 
         //To predict from images in Gallery
-        upload.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(FoodCamera.this, FoodDetection.class));
-            }
+        upload.setOnClickListener(v -> {
+            Intent getIntent = new Intent(Intent.ACTION_GET_CONTENT);
+            getIntent.setType("image/*");
+
+            Intent pickIntent = new Intent(Intent.ACTION_PICK, android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+            pickIntent.setType("image/*");
+
+            Intent chooserIntent = Intent.createChooser(getIntent, "Select Image");
+            chooserIntent.putExtra(Intent.EXTRA_INITIAL_INTENTS, new Intent[]{pickIntent});
+
+            startActivityForResult(chooserIntent, 1);
         });
 
         startCamera();
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == 1 && data != null && data.getData() != null && resultCode == RESULT_OK) {
+            String realPath = ImageFilePath.getPath(FoodCamera.this, data.getData());
+            if (!realPath.equals("")) {
+                Intent predictionIntent = new Intent(FoodCamera.this, FoodCamDetection.class);
+                predictionIntent.putExtra("method", "gallery");
+                predictionIntent.putExtra("image", realPath);
+                startActivity(predictionIntent);
+            }else{
+                Toast.makeText(getApplicationContext(), "Invalid Image", Toast.LENGTH_SHORT).show();
+            }
+        }
+        return;
     }
 
     @Override
@@ -76,25 +101,22 @@ public class FoodCamera extends AppCompatActivity implements LifecycleOwner {
 
         CameraX.unbindAll();
 
-        Rational aspectRatio = new Rational (textureView.getWidth(), textureView.getHeight());
+        Rational aspectRatio = new Rational(textureView.getWidth(), textureView.getHeight());
         Size screen = new Size(textureView.getWidth(), textureView.getHeight()); //size of the screen
 
 
         PreviewConfig pConfig = new PreviewConfig.Builder().setTargetAspectRatio(aspectRatio).setTargetResolution(screen).build();
         Preview preview = new Preview(pConfig);
 
+        //to update the surface texture we  have to destroy it first then re-add it
         preview.setOnPreviewOutputUpdateListener(
-                new Preview.OnPreviewOutputUpdateListener() {
-                    //to update the surface texture we  have to destroy it first then re-add it
-                    @Override
-                    public void onUpdated(Preview.PreviewOutput output){
-                        ViewGroup parent = (ViewGroup) textureView.getParent();
-                        parent.removeView(textureView);
-                        parent.addView(textureView, 0);
+                output -> {
+                    ViewGroup parent = (ViewGroup) textureView.getParent();
+                    parent.removeView(textureView);
+                    parent.addView(textureView, 0);
 
-                        textureView.setSurfaceTexture(output.getSurfaceTexture());
-                        updateTransform();
-                    }
+                    textureView.setSurfaceTexture(output.getSurfaceTexture());
+                    updateTransform();
                 });
 
 
@@ -102,35 +124,33 @@ public class FoodCamera extends AppCompatActivity implements LifecycleOwner {
                 .setTargetRotation(getWindowManager().getDefaultDisplay().getRotation()).build();
         final ImageCapture imgCap = new ImageCapture(imageCaptureConfig);
 
-        takePictureButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        takePictureButton.setOnClickListener(v -> {
 
-                File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/" + "IMG" + System.currentTimeMillis() + ".png");
-                imgCap.takePicture(file, new ImageCapture.OnImageSavedListener() {
-                    @Override
-                    public void onImageSaved(@NonNull File file) {
-                        Intent predictionIntent = new Intent(FoodCamera.this, FoodCamDetection.class);
-                        predictionIntent.putExtra("image", file.getAbsolutePath());
-                        startActivity(predictionIntent);
+            File file = new File(getExternalFilesDir(Environment.DIRECTORY_PICTURES) + "/" + "IMG" + System.currentTimeMillis() + ".png");
+            imgCap.takePicture(file, new ImageCapture.OnImageSavedListener() {
+                @Override
+                public void onImageSaved(@NonNull File file) {
+                    Intent predictionIntent = new Intent(FoodCamera.this, FoodCamDetection.class);
+                    predictionIntent.putExtra("method", "camera");
+                    predictionIntent.putExtra("image", file.getAbsolutePath());
+                    startActivity(predictionIntent);
+                }
+
+                @Override
+                public void onError(@NonNull ImageCapture.UseCaseError useCaseError, @NonNull String message, @Nullable Throwable cause) {
+                    if (cause != null) {
+                        //cause.printStackTrace();
                     }
+                }
+            });
 
-                    @Override
-                    public void onError(@NonNull ImageCapture.UseCaseError useCaseError, @NonNull String message, @Nullable Throwable cause) {
-                        if(cause != null){
-                            cause.printStackTrace();
-                        }
-                    }
-                });
-
-            }
         });
 
         //bind to lifecycle:
-        CameraX.bindToLifecycle(this,preview, imgCap);
+        CameraX.bindToLifecycle(this, preview, imgCap);
     }
 
-    private void updateTransform(){
+    private void updateTransform() {
         Matrix mx = new Matrix();
         float w = textureView.getMeasuredWidth();
         float h = textureView.getMeasuredHeight();
@@ -139,9 +159,9 @@ public class FoodCamera extends AppCompatActivity implements LifecycleOwner {
         float cY = h / 2f;
 
         int rotationDgr;
-        int rotation = (int)textureView.getRotation();
+        int rotation = (int) textureView.getRotation();
 
-        switch(rotation){
+        switch (rotation) {
             case Surface.ROTATION_0:
                 rotationDgr = 0;
                 break;
@@ -158,7 +178,7 @@ public class FoodCamera extends AppCompatActivity implements LifecycleOwner {
                 return;
         }
 
-        mx.postRotate((float)rotationDgr, cX, cY);
+        mx.postRotate((float) rotationDgr, cX, cY);
         textureView.setTransform(mx);
     }
 }

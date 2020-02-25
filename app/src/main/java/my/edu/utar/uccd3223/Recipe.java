@@ -29,9 +29,7 @@ public class Recipe extends Fragment {
     private final String[] REQUIRED_PERMISSIONS = new String[]{"android.permission.CAMERA", "android.permission.WRITE_EXTERNAL_STORAGE"};
     private static final int PERMISSION_CODE = 101;
 
-
     private ListView recipeList;
-    private int numberRecipesShow;
 
     @Nullable
     @Override
@@ -42,9 +40,9 @@ public class Recipe extends Fragment {
         View view = inflater.inflate(R.layout.activity_recipe, container, false);
 
         // set it up to get user inputs
-        final EditText foodInputArea = (EditText) view.findViewById(R.id.inputBox);
-        ImageButton searchButton = (ImageButton) view.findViewById(R.id.searchButton);
-        ImageButton photoButton = (ImageButton) view.findViewById(R.id.insertPhoto);
+        EditText foodInputArea = view.findViewById(R.id.inputBox);
+        ImageButton searchButton = view.findViewById(R.id.searchButton);
+        ImageButton photoButton = view.findViewById(R.id.insertPhoto);
 
 
         photoButton.setOnClickListener(v -> {
@@ -59,16 +57,20 @@ public class Recipe extends Fragment {
 
         // What happens when search button is clicked.
         searchButton.setOnClickListener(v -> {
-
             Toast.makeText(context,
                     "Hold up, put on thy aprons because we're fetching some delicious recipes!",
                     Toast.LENGTH_LONG).show();
-
-
         });
+
+        // Receive from camera - predict food
+        Bundle args = this.getArguments();
+        if (args != null) {
+            String foodname = args.getString("food");
+            foodInputArea.setText(foodname);
+            searchButton.performClick();
+        }
+
         recipeList = (ListView) view.findViewById(R.id.lv_recipe_frag);
-        // hardcoded value for now
-        numberRecipesShow = 10;
 
         return view;
     }

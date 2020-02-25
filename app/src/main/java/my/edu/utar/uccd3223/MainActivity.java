@@ -4,12 +4,20 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.annotation.NonNull;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+
 import android.os.Bundle;
+import android.os.Handler;
+import android.view.Gravity;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
+
+    private long doubleBackToExit;
+    private static final int TIME_INTERVAL = 2000;
 
     private BottomNavigationView.OnNavigationItemSelectedListener navListener =
             new BottomNavigationView.OnNavigationItemSelectedListener() {
@@ -35,9 +43,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     FragmentManager fm = getSupportFragmentManager();
-                    // create arguments to be sent to recipeFragment
-                    Bundle args = new Bundle();
-                    selectedFragment.setArguments(args);
+
                     fm.beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
                     return true;
                 }
@@ -54,7 +60,30 @@ public class MainActivity extends AppCompatActivity {
         FragmentManager fm = this.getSupportFragmentManager();
 
         Recipe recipeFrag = new Recipe();
+        // create arguments to be sent to recipe fragment
+        Bundle args = new Bundle();
+
+        Bundle bundleExtras = getIntent().getExtras();
+        if (bundleExtras != null) {
+            args.putString("food", bundleExtras.getString("food"));
+        }
+        recipeFrag.setArguments(args);
         // start transaction
         fm.beginTransaction().replace(R.id.fragment_container, recipeFrag).commit();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (doubleBackToExit + TIME_INTERVAL > System.currentTimeMillis()) {
+            super.onBackPressed();
+            return;
+        } else {
+            Toast toast = Toast.makeText(getBaseContext(), "Tap back button in order to exit", Toast.LENGTH_SHORT);
+            toast.setGravity(Gravity.CENTER, 0, 0);
+            toast.show();
+        }
+
+        doubleBackToExit = System.currentTimeMillis();
+
     }
 }

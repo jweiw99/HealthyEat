@@ -7,11 +7,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -32,6 +33,8 @@ import com.google.firebase.ml.custom.FirebaseModelOptions;
 import com.google.firebase.ml.custom.FirebaseModelOutputs;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.math.BigDecimal;
@@ -40,7 +43,6 @@ import java.nio.ByteOrder;
 import java.util.AbstractMap;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.PriorityQueue;
@@ -67,16 +69,11 @@ public class FoodCamDetection extends AppCompatActivity {
     private final PriorityQueue<Map.Entry<String, Float>> sortedLabels =
             new PriorityQueue<>(
                     1,
-                    new Comparator<Map.Entry<String, Float>>() {
-                        @Override
-                        public int compare(Map.Entry<String, Float> o1, Map.Entry<String, Float>
-                                o2) {
-                            return (o1.getValue()).compareTo(o2.getValue());
-                        }
-                    });
+                    (o1, o2) -> (o1.getValue()).compareTo(o2.getValue()));
 
     private ImageView mImageView;
-    private Button retakeBtn, predictBtn, continueBtn;
+    private Button retakeBtn, continueBtn;
+    private ProgressBar loadingIndicator;
     private Bitmap mSelectedImage;
 
     TextView foodP;
@@ -89,43 +86,44 @@ public class FoodCamDetection extends AppCompatActivity {
 
         mImageView = findViewById(R.id.image_view);
         retakeBtn = findViewById(R.id.retakeBtn);
-        predictBtn = findViewById(R.id.predictBtn);
         continueBtn = findViewById(R.id.continueBtn);
+        loadingIndicator = findViewById(R.id.progressBar_cyclic);
 
         foodP = findViewById(R.id.predictfoodName);
 
         rl = findViewById(R.id.foodCamBody);
 
         Bundle bundleExtras = getIntent().getExtras();
+        String method = bundleExtras.getString("method");
         String path = bundleExtras.getString("image");
+
         mSelectedImage = BitmapFactory.decodeFile(path);
+
+        if (method.equals("gallery")) {
+            try {
+                mSelectedImage = convertToPNG(mSelectedImage);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
         mImageView.setImageBitmap(mSelectedImage);
 
         initCustomModel();
 
-        retakeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(FoodCamDetection.this, FoodCamera.class));
-            }
-        });
+        retakeBtn.setOnClickListener(v -> finish());
 
-        predictBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                runModelInference();
-            }
-        });
-
-        continueBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
+        continueBtn.setOnClickListener(v -> {
+            Intent intent = new Intent(FoodCamDetection.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            intent.putExtra("food", foodP.getText().toString().toLowerCase());
+            startActivity(intent);
         });
     }
 
     private void initCustomModel() {
+        loadingIndicator.setVisibility(View.VISIBLE);
         mLabelList = loadLabelList(this);
 
         int[] inputDims = {DIM_BATCH_SIZE, DIM_IMG_SIZE_X, DIM_IMG_SIZE_Y, DIM_PIXEL_SIZE};
@@ -140,26 +138,25 @@ public class FoodCamDetection extends AppCompatActivity {
                     .Builder()
                     .requireWifi()
                     .build();
-            /*
             FirebaseRemoteModel remoteModel = new FirebaseRemoteModel.Builder
                     (HOSTED_MODEL_NAME)
                     .enableModelUpdates(true)
                     .setInitialDownloadConditions(conditions)
                     .setUpdatesDownloadConditions(conditions)
                     .build();
-            */
             FirebaseLocalModel localModel =
                     new FirebaseLocalModel.Builder("asset")
                             .setAssetFilePath(LOCAL_MODEL_ASSET).build();
             FirebaseModelManager manager = FirebaseModelManager.getInstance();
-            //manager.registerRemoteModel(remoteModel);
+            manager.registerRemoteModel(remoteModel);
             manager.registerLocalModel(localModel);
             FirebaseModelOptions modelOptions =
                     new FirebaseModelOptions.Builder()
-                            //.setRemoteModelName(HOSTED_MODEL_NAME)
+                            .setRemoteModelName(HOSTED_MODEL_NAME)
                             .setLocalModelName("asset")
                             .build();
             mInterpreter = FirebaseModelInterpreter.getInstance(modelOptions);
+            runModelInference();
         } catch (FirebaseMLException e) {
             Toast.makeText(getApplicationContext(), "Error while setting up the model", Toast.LENGTH_SHORT).show();
             e.printStackTrace();
@@ -198,9 +195,9 @@ public class FoodCamDetection extends AppCompatActivity {
                                     foodLabel = foodLabel.substring(0, 1).toUpperCase() + foodLabel.substring(1);
 
                                     if (!foodLabel.equals("")) {
+                                        loadingIndicator.setVisibility(View.GONE);
                                         foodP.setVisibility(View.VISIBLE);
                                         foodP.setText(topLabels.get(0));
-                                        predictBtn.setVisibility(View.GONE);
                                         continueBtn.setVisibility(View.VISIBLE);
                                     } else {
                                         Toast.makeText(getApplicationContext(), "Label error", Toast.LENGTH_SHORT).show();
@@ -277,5 +274,28 @@ public class FoodCamDetection extends AppCompatActivity {
         BigDecimal bd = new BigDecimal(Float.toString(d));
         bd = bd.setScale(decimalPlace, BigDecimal.ROUND_HALF_UP);
         return bd.floatValue();
+    }
+
+    public static Bitmap convertToPNG(Bitmap image) throws IOException {
+
+        File storageDir = Environment.getExternalStoragePublicDirectory(
+                Environment.DIRECTORY_PICTURES);
+        File imageFile = File.createTempFile(
+                "gallery_photo",  /* prefix */
+                ".png",         /* suffix */
+                storageDir      /* directory */
+        );
+        FileOutputStream outStream = null;
+
+        try {
+            outStream = new FileOutputStream(imageFile);
+            image.compress(Bitmap.CompressFormat.PNG, 100, outStream);
+            outStream.flush();
+            outStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return BitmapFactory.decodeFile(imageFile.getAbsolutePath());
     }
 }
