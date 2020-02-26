@@ -1,4 +1,4 @@
-package my.edu.utar.uccd3223;
+package my.edu.utar.uccd3223.util;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;

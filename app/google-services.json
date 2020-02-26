@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "1095687195623",
+    "firebase_url": "https://uccd3223-b3073.firebaseio.com",
+    "project_id": "uccd3223-b3073",
+    "storage_bucket": "uccd3223-b3073.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1095687195623:android:c694276a47013babe98b42",
+        "android_client_info": {
+          "package_name": "my.edu.utar.uccd3223"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1095687195623-6vtbcq6e24rsv6fedc0gvah4ug31n4j0.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDMYKSc-kSSLEchDTB6AJCYmAVq_Q8mDnU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1095687195623-6vtbcq6e24rsv6fedc0gvah4ug31n4j0.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

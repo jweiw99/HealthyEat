@@ -66,8 +66,8 @@ public class MainActivity extends AppCompatActivity {
         Bundle bundleExtras = getIntent().getExtras();
         if (bundleExtras != null) {
             args.putString("food", bundleExtras.getString("food"));
+            recipeFrag.setArguments(args);
         }
-        recipeFrag.setArguments(args);
         // start transaction
         fm.beginTransaction().replace(R.id.fragment_container, recipeFrag).commit();
     }

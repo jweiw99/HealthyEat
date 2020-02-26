@@ -20,12 +20,13 @@ import android.util.Rational;
 import android.util.Size;
 import android.view.Surface;
 import android.view.TextureView;
-import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import java.io.File;
+
+import my.edu.utar.uccd3223.util.ImageFilePath;
 
 public class FoodCamera extends AppCompatActivity implements LifecycleOwner {
 
