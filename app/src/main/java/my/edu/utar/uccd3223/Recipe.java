@@ -10,31 +10,25 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.android.volley.AuthFailureError;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import my.edu.utar.uccd3223.API.SpoonAPI;
 import my.edu.utar.uccd3223.models.RecipeTemp;
@@ -48,7 +42,7 @@ public class Recipe extends Fragment {
 
     private List<RecipeTemp> recipeTempList;
     private ListView recipeList;
-    private RecipeComplexAdapter recipeComplexAdapter;
+    private RecipeAdapter recipeAdapter;
     private RequestQueue requestQueue;
 
     private String searchFoodName = "";
@@ -82,11 +76,19 @@ public class Recipe extends Fragment {
 
         // What happens when search button is clicked.
         searchButton.setOnClickListener(v -> {
-            Toast.makeText(context,
-                    "Hold up, put on thy aprons because we're fetching some delicious recipes!",
-                    Toast.LENGTH_LONG).show();
             searchFoodName = foodInputArea.getText().toString();
-            retrieveRecipesWithName();
+            if (!searchFoodName.isEmpty()) {
+                InputMethodManager imm = (InputMethodManager) context.getSystemService(getActivity().INPUT_METHOD_SERVICE);
+                imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
+                Toast.makeText(context,
+                        "Hold up, fetching some delicious recipes!",
+                        Toast.LENGTH_SHORT).show();
+                try {
+                    retrieveRecipesWithName();
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
         });
 
         // Receive from camera - predict food
@@ -104,8 +106,8 @@ public class Recipe extends Fragment {
     // create listview and display recipes
     private void handleRecipeFragmentAdapter() {
         Context context = getActivity().getApplicationContext();
-        recipeComplexAdapter = new RecipeComplexAdapter(context, recipeTempList);
-        recipeList.setAdapter(recipeComplexAdapter);
+        recipeAdapter = new RecipeAdapter(context, recipeTempList);
+        recipeList.setAdapter(recipeAdapter);
         recipeList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
@@ -122,58 +124,37 @@ public class Recipe extends Fragment {
     }
 
     // call api with given Name
-    private void retrieveRecipesWithName() {
+    private void retrieveRecipesWithName() throws JSONException {
         requestQueue = Volley.newRequestQueue(getActivity());
-
-        int max = 0;
-        String cuisine = "";
-        int numberRecipesToShow = 10;
-
-        List<String> cuisinesList = new ArrayList<>(
-                Arrays.asList("african", "chinese", "korean", "japanese", "vietnamese",
-                        "thai", "irish", "italian", "spanish", "british", "indian",
-                        "mexican", "french", "eastern", "middle", "american", "jewish",
-                        "southern", "caribbean", "cajun", "greek", "nordic", "german",
-                        "european", "eastern")
-        );
-
-        cuisine = "";
 
         final SpoonAPI spoon = new SpoonAPI();
         final String apikey = spoon.getAPIKey();
 
-        String url = spoon.getRecipeComplexURL(searchFoodName, numberRecipesToShow,1500, cuisine);
+        String url = spoon.getRecipeURL(searchFoodName);
 
-        Log.d("RECIPEFRAGMENT", "ABOUT TO DO THE API CALL");
-        JsonObjectRequest req = new JsonObjectRequest(Request.Method.GET, url, null,
-                new Response.Listener<JSONObject>() {
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        spoon.getRecipeComplexHelper(response);
-                        Log.d("RECIPEFRAGMENT", "THIS IS THE SPOON RESULT: "
-                                + spoon.getRecipeComplex());
-                        recipeTempList = spoon.getRecipeComplex();
+        String responedata = "{\"results\":[{\"id\":246916,\"title\":\"Bison Burger\",\"readyInMinutes\":45,\"servings\":6,\"image\":\"Buffalo-Burger-246916.jpg\",\"imageUrls\":[\"Buffalo-Burger-246916.jpg\"]},{\"id\":245166,\"title\":\"Hawaiian Pork Burger\",\"readyInMinutes\":40,\"servings\":4,\"image\":\"Hawaiian-Pork-Burger-245166.jpg\",\"imageUrls\":[\"Hawaiian-Pork-Burger-245166.jpg\"]},{\"id\":246009,\"title\":\"Blue Cheese Burgers\",\"readyInMinutes\":55,\"servings\":4,\"image\":\"Blue-Cheese-Burgers-246009.jpg\",\"imageUrls\":[\"Blue-Cheese-Burgers-246009.jpg\"]},{\"id\":219957,\"title\":\"Carrot & sesame burgers\",\"readyInMinutes\":50,\"servings\":6,\"image\":\"Carrot---sesame-burgers-219957.jpg\",\"imageUrls\":[\"Carrot---sesame-burgers-219957.jpg\"]},{\"id\":607109,\"title\":\"Turkey Zucchini Burger with Garlic Mayo\",\"readyInMinutes\":45,\"servings\":6,\"image\":\"Turkey-Zucchini-Burger-with-Garlic-Mayo-607109.jpg\",\"imageUrls\":[\"Turkey-Zucchini-Burger-with-Garlic-Mayo-607109.jpg\"]},{\"id\":864633,\"title\":\"Banh Mi Burgers with Spicy Sriracha Mayo\",\"readyInMinutes\":35,\"servings\":4,\"image\":\"banh-mi-burgers-with-spicy-sriracha-mayo-864633.jpg\",\"imageUrls\":[\"banh-mi-burgers-with-spicy-sriracha-mayo-864633.jpg\"]},{\"id\":219871,\"title\":\"Halloumi aubergine burgers with harissa relish\",\"readyInMinutes\":20,\"servings\":4,\"image\":\"Halloumi-aubergine-burgers-with-harissa-relish-219871.jpg\",\"imageUrls\":[\"Halloumi-aubergine-burgers-with-harissa-relish-219871.jpg\"]},{\"id\":246177,\"title\":\"Grilled Beef and Mushroom Burger\",\"readyInMinutes\":30,\"servings\":3,\"image\":\"Grilled-Beef-and-Mushroom-Burger-246177.jpg\",\"imageUrls\":[\"Grilled-Beef-and-Mushroom-Burger-246177.jpg\"]},{\"id\":245343,\"title\":\"Herbed Turkey Burger\",\"readyInMinutes\":30,\"servings\":8,\"image\":\"Herbed-Turkey-Burger-245343.jpg\",\"imageUrls\":[\"Herbed-Turkey-Burger-245343.jpg\"]},{\"id\":593801,\"title\":\"Turkey Burgers with Mango Chutney\",\"readyInMinutes\":30,\"servings\":12,\"image\":\"Ground-Turkey-Burger-Sliders-with-Mango-Chutney-593801.jpg\",\"imageUrls\":[\"Ground-Turkey-Burger-Sliders-with-Mango-Chutney-593801.jpg\"]}],\"baseUri\":\"https://spoonacular.com/recipeImages/\",\"offset\":0,\"number\":10,\"totalResults\":103,\"processingTimeMs\":272,\"expires\":1582920875140,\"isStale\":false}";
+
+        spoon.getRecipeHelper(new JSONObject(responedata));
+        recipeTempList = spoon.getRecipe();
+        handleRecipeFragmentAdapter();
+
+/*
+        StringRequest req = new StringRequest(Request.Method.GET, url,
+                response -> {
+                    try {
+                        spoon.getRecipeHelper(new JSONObject(response));
+                        recipeTempList = spoon.getRecipe();
                         handleRecipeFragmentAdapter();
+                    } catch (JSONException e) {
+                        e.printStackTrace();
                     }
-                }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
+                }, error -> {
 
-            }
-        }) {
-
-            /**
-             * Passing some request headers
-             */
-            @Override
-            public Map<String, String> getHeaders() throws AuthFailureError {
-                HashMap<String, String> headers = new HashMap<String, String>();
-                headers.put("Content-Type", "application/x-www-form-urlencoded");
-                headers.put("X-RapidAPI-Key", apikey);
-                return headers;
-            }
-        };
+                });
         requestQueue.add(req);
+*/
+
+
     }
 
     // Handles the response after when the user presses the camera button

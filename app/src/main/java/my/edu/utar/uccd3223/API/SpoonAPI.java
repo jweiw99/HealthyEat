@@ -15,18 +15,26 @@ import my.edu.utar.uccd3223.models.RecipeTemp;
 
 public class SpoonAPI {
     // urls for API calls
-    private String url_complexRecipe = "https://https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/searchComplex";
+    private String url_complexRecipe = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/searchComplex";
+    private String url_Recipe = "https://api.spoonacular.com/recipes/search";
     private String apiKey = "f31cc73187534697a9417c425e05366b";
-    private String url_getRecipeWithID1 = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/";
+    private String url_getRecipeWithID1 = "https://api.spoonacular.com/recipes/";
     private String url_getRecipeWithID2 = "/information?includeNutrition=true";
     // API return variables
     private List<RecipeTemp> recipeComplex;
+    private List<RecipeTemp> recipeSimple;
+    private List<RecipeTemp> recipeList;
     private RecipeFull recipeFull;
 
 
     // get recipeFull after helper function is finished
     public RecipeFull getRecipeFull() {
         return recipeFull;
+    }
+
+    // get recipeComplex list of recipes when helper function is finished
+    public List<RecipeTemp> getRecipe() {
+        return recipeSimple;
     }
 
     // get recipeComplex list of recipes when helper function is finished
@@ -37,7 +45,15 @@ public class SpoonAPI {
     // returns url query for getting a recipe's full information given ID
     public String getRecipeIDURL(String id) {
         recipeFull = new RecipeFull();
-        String url_query = url_getRecipeWithID1 + id + url_getRecipeWithID2;
+        String url_query = url_getRecipeWithID1 + id + url_getRecipeWithID2 + "&apiKey=";
+        url_query += apiKey;
+        return url_query;
+    }
+
+    public String getRecipeURL(String foods) {
+        recipeList = new ArrayList<>();
+        String url_query = url_Recipe + "?query=" + foods + "&apiKey=";
+        url_query += apiKey;
         return url_query;
     }
 
@@ -71,6 +87,28 @@ public class SpoonAPI {
         url_query += foods;
 
         return url_query;
+    }
+
+    // helper function to set up recipe object for getRecipeURL function
+    public void getRecipeHelper(JSONObject response) {
+        recipeSimple = new ArrayList<>();
+        try {
+            JSONArray json_recipes = response.getJSONArray("results");
+
+            for (int j = 0; j < json_recipes.length(); ++j) {
+                JSONObject recipe_object = json_recipes.getJSONObject(j);
+                RecipeTemp recipe = new RecipeTemp();
+
+                recipe.setId(Integer.toString(recipe_object.getInt("id")));
+                recipe.setImage(recipe_object.getString("image"));
+                recipe.setTitle(recipe_object.getString("title"));
+
+                recipeSimple.add(recipe);
+            }
+
+        } catch (Exception e) {
+
+        }
     }
 
     // helper function to set up recipe object for getRecipeComplex function

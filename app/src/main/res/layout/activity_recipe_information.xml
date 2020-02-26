@@ -1,31 +1,154 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".RecipeInformation">
 
-    <android.support.design.widget.AppBarLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary" />
-
-    </android.support.design.widget.AppBarLayout>
-
-    <include layout="@layout/content_recipe_information" />
-
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="16dp"
-        app:srcCompat="@android:drawable/ic_delete" />
+        android:gravity="center"
+        android:orientation="vertical">
 
-</android.support.design.widget.CoordinatorLayout>
+        <ImageView
+            android:id="@+id/iv_recipeInfo_recipeImage"
+            android:layout_width="match_parent"
+            android:layout_height="200dp"
+            android:layout_centerHorizontal="true"
+            android:adjustViewBounds="true"/>
+
+        <TextView
+            android:id="@+id/tv_recipeInfo_title"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/iv_recipeInfo_recipeImage"
+            android:layout_centerHorizontal="true"
+            android:layout_margin="16dp"
+            android:gravity="center"
+            android:text=""
+            android:textSize="24sp" />
+
+        <TextView
+            android:id="@+id/tv_recipeInfo_cookingInMins"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/iv_recipeInfo_recipeImage"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="8dp"
+            android:padding="5dp"
+            android:text=""
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/tv_recipeInfo_servings"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_recipeInfo_cookingInMins"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="8dp"
+            android:padding="5dp"
+            android:text=""
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/tv_recipeInfo_ingredients"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_recipeInfo_servings"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="8dp"
+            android:padding="5dp"
+            android:text=""
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/tv_recipeInfo_calories"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_recipeInfo_ingredients"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="8dp"
+            android:padding="5dp"
+            android:text=""
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/tv_recipeInfo_protein"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_recipeInfo_calories"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="8dp"
+            android:padding="5dp"
+            android:text=""
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/tv_recipeInfo_fat"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_recipeInfo_protein"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="8dp"
+            android:padding="5dp"
+            android:text=""
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/tv_recipeInfo_carbs"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_recipeInfo_fat"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="8dp"
+            android:padding="5dp"
+            android:text=""
+            android:textSize="16dp" />
+
+        <TextView
+            android:id="@+id/tv_recipeInfo_instructions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_recipeInfo_carbs"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginVertical="8dp"
+            android:padding="5dp"
+            android:text=""
+            android:textSize="16dp" />
+
+        <LinearLayout
+            android:id="@+id/buttonss"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/tv_recipeInfo_instructions"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="50dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_recipeInfo_exit"
+                style="@style/buttonStyle"
+                android:layout_width="120dp"
+                android:layout_height="55dp"
+                android:layout_marginRight="15dp"
+                android:background="@drawable/button"
+                android:text="Exit"
+                android:onClick="exit"/>
+
+            <Button
+                android:id="@+id/btn_eat"
+                style="@style/buttonStyle"
+                android:layout_width="120dp"
+                android:layout_height="55dp"
+                android:layout_marginRight="15dp"
+                android:background="@drawable/button"
+                android:text="Eat!"
+                android:onClick="changeCalories" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>
