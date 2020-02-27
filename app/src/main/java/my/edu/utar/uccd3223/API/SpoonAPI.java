@@ -17,13 +17,14 @@ public class SpoonAPI {
     // urls for API calls
     private String url_complexRecipe = "https://api.spoonacular.com/recipes/searchComplex";
     private String url_Recipe = "https://api.spoonacular.com/recipes/search";
-    private String apiKey = "f31cc73187534697a9417c425e05366b";
     private String url_getRecipeWithID1 = "https://api.spoonacular.com/recipes/";
     private String url_getRecipeWithID2 = "/information?includeNutrition=true";
+    private String url_MealPlan = "https://api.spoonacular.com/mealplanner/generate";
+    private String apiKey = "f31cc73187534697a9417c425e05366b";
     // API return variables
     private List<RecipeTemp> recipeComplex;
     private List<RecipeTemp> recipeSimple;
-    private List<RecipeTemp> recipeList;
+    private List<RecipeTemp> mealPlan;
     private RecipeFull recipeFull;
 
 
@@ -32,9 +33,14 @@ public class SpoonAPI {
         return recipeFull;
     }
 
-    // get recipeComplex list of recipes when helper function is finished
+    // get recipeSimple list of recipes when helper function is finished
     public List<RecipeTemp> getRecipe() {
         return recipeSimple;
+    }
+
+    // get mealPlan list of recipes when helper function is finished
+    public List<RecipeTemp> getMeal() {
+        return mealPlan;
     }
 
     // get recipeComplex list of recipes when helper function is finished
@@ -51,8 +57,15 @@ public class SpoonAPI {
     }
 
     public String getRecipeURL(String foods) {
-        recipeList = new ArrayList<>();
+        recipeSimple = new ArrayList<>();
         String url_query = url_Recipe + "?query=" + foods + "&apiKey=";
+        url_query += apiKey;
+        return url_query;
+    }
+
+    public String getMealPlanURL(String colories) {
+        mealPlan = new ArrayList<>();
+        String url_query = url_MealPlan + "?timeFrame=day&targetCalories=" + colories + "&apiKey=";
         url_query += apiKey;
         return url_query;
     }
@@ -100,7 +113,6 @@ public class SpoonAPI {
 
     // helper function to set up recipe object for getRecipeURL function
     public void getRecipeHelper(JSONObject response) {
-        recipeSimple = new ArrayList<>();
         try {
             JSONArray json_recipes = response.getJSONArray("results");
 
@@ -113,6 +125,28 @@ public class SpoonAPI {
                 recipe.setTitle(recipe_object.getString("title"));
 
                 recipeSimple.add(recipe);
+            }
+
+        } catch (Exception e) {
+
+        }
+    }
+
+
+    // helper function to set up recipe object for getRecipeURL function
+    public void getMealPlanHelper(JSONObject response) {
+        try {
+            JSONArray json_recipes = response.getJSONArray("meals");
+
+            for (int j = 0; j < json_recipes.length(); ++j) {
+                JSONObject recipe_object = json_recipes.getJSONObject(j);
+                RecipeTemp recipe = new RecipeTemp();
+
+                recipe.setId(Integer.toString(recipe_object.getInt("id")));
+                recipe.setImage(recipe_object.getString("image"));
+                recipe.setTitle(recipe_object.getString("title"));
+
+                mealPlan.add(recipe);
             }
 
         } catch (Exception e) {

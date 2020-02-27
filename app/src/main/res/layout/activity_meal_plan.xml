@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".Recipe">
+    tools:context=".MealPlan">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -16,7 +16,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginTop="20dp"
             android:layout_marginRight="20dp"
-            android:text="@string/recipe_title" />
+            android:text="@string/mealplan_title" />
 
         <LinearLayout
             android:id="@+id/inputLayout"
@@ -27,35 +27,25 @@
             tools:layout_editor_absoluteY="0dp">
 
             <EditText
-                android:id="@+id/inputRecipeBox"
+                android:id="@+id/inputCaloriesBox"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
-                android:hint="@string/recipe_name"
+                android:hint="@string/mealplan_name"
                 android:inputType="text"
                 android:maxLines="1"
                 android:backgroundTint="@color/colorPrimary"
                 android:textCursorDrawable="@null"/>
 
             <ImageButton
-                android:id="@+id/searchRecipeButton"
+                android:id="@+id/searchCaloriesButton"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
                 android:layout_weight="1"
                 android:background="@android:color/transparent"
                 android:src="@drawable/ic_search"
-                android:tint="@color/colorPrimary" />
-
-            <ImageButton
-                android:id="@+id/insertPhoto"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center"
-                android:layout_weight="1"
-                android:background="@android:color/transparent"
-                android:src="@drawable/ic_camera"
                 android:tint="@color/colorPrimary" />
         </LinearLayout>
 
@@ -66,7 +56,7 @@
             android:layout_marginLeft="20dp"
             android:layout_marginTop="0dp"
             android:layout_marginRight="20dp"
-            android:text="@string/recipe_desc" />
+            android:text="@string/mealplan_desc" />
 
         <my.edu.utar.uccd3223.util.NonScrollListView
             android:id="@+id/lv_recipe_frag"
@@ -77,4 +67,5 @@
             android:layout_marginTop="40dp"></my.edu.utar.uccd3223.util.NonScrollListView>
 
     </LinearLayout>
+
 </ScrollView>

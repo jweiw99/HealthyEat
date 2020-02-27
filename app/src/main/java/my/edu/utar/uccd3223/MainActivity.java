@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
 
                     case R.id.nav_mealplan:
-                        selectedFragment = new Ingredient();
+                        selectedFragment = new MealPlan();
                         break;
 
                     case R.id.nav_dashboard:

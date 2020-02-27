@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import android.Manifest;
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -58,10 +59,16 @@ public class Recipe extends Fragment {
         recipeList = (ListView) view.findViewById(R.id.lv_recipe_frag);
 
         // set it up to get user inputs
-        EditText foodInputArea = view.findViewById(R.id.inputBox);
-        ImageButton searchButton = view.findViewById(R.id.searchButton);
+        EditText foodInputArea = view.findViewById(R.id.inputRecipeBox);
+        ImageButton searchButton = view.findViewById(R.id.searchRecipeButton);
         ImageButton photoButton = view.findViewById(R.id.insertPhoto);
 
+
+        foodInputArea.setOnFocusChangeListener((v, b) -> {
+            if (!b) {
+                hideKeyboard(getContext(), view);
+            }
+        });
 
         photoButton.setOnClickListener(v -> {
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED || ContextCompat.checkSelfPermission(context, Manifest.permission.WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED) {
@@ -75,10 +82,9 @@ public class Recipe extends Fragment {
 
         // What happens when search button is clicked.
         searchButton.setOnClickListener(v -> {
+            foodInputArea.clearFocus();
             searchFoodName = foodInputArea.getText().toString();
             if (!searchFoodName.isEmpty()) {
-                InputMethodManager imm = (InputMethodManager) context.getSystemService(getActivity().INPUT_METHOD_SERVICE);
-                imm.toggleSoftInput(InputMethodManager.HIDE_IMPLICIT_ONLY, 0);
                 Toast.makeText(context,
                         "Hold up, fetching some delicious recipes!",
                         Toast.LENGTH_SHORT).show();
@@ -165,6 +171,13 @@ public class Recipe extends Fragment {
                 Toast.makeText(context, getString(R.string.camera_permission_denied), Toast.LENGTH_LONG)
                         .show();
             }
+        }
+    }
+
+    private void hideKeyboard(Context context, View view) {
+        if (view != null) {
+            InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
         }
     }
 }

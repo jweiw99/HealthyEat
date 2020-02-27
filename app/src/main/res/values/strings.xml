@@ -9,9 +9,13 @@
     <string name="recipe_desc">Did you know that you can click on the camera icon to let the app find the food using your camera?</string>
     <string name="recipe_name">Food Name</string>
 
-    <string name="ingredient_title">Input your Ingredients name below and hit search to start!</string>
+    <string name="ingredient_title">Input your ingredients name below and hit search to start!</string>
     <string name="ingredient_desc">Did you know that you can click on the add icon to put more ingredient and search?</string>
     <string name="ingredient_name">Ingredient Name</string>
+
+    <string name="mealplan_title">Input your target calories today on below and hit search to start!</string>
+    <string name="mealplan_desc">It will show all today suggestion below once you put your target calories.</string>
+    <string name="mealplan_name">Calories</string>
 
     <string name="camera_permission_ok">Camera Permission Granted</string>
     <string name="camera_permission_denied">Sorry, you need to allow access to Camera to use this feature.</string>

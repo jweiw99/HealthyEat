@@ -17,7 +17,8 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Ingredient"></activity>
+        <activity android:name=".MealPlan"></activity>
+        <activity android:name=".Ingredient" />
         <activity android:name=".RecipeAdapter" />
         <activity android:name=".RecipeInformation" />
         <activity android:name=".FoodCamDetection" />
