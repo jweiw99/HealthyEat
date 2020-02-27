@@ -1,9 +1,17 @@
 <resources>
     <string name="app_name">HealthyEat</string>
+    <string name="menu_user">Profile</string>
+    <string name="nav_header_title">Healthy Eat</string>
+    <string name="nav_header_desc">Best way to eat</string>
+    <string name="nav_header_subtitle">jweiw99@1utar.my</string>
 
     <string name="recipe_title">Input your food name below and hit search to start!</string>
     <string name="recipe_desc">Did you know that you can click on the camera icon to let the app find the food using your camera?</string>
     <string name="recipe_name">Food Name</string>
+
+    <string name="ingredient_title">Input your Ingredients name below and hit search to start!</string>
+    <string name="ingredient_desc">Did you know that you can click on the add icon to put more ingredient and search?</string>
+    <string name="ingredient_name">Ingredient Name</string>
 
     <string name="camera_permission_ok">Camera Permission Granted</string>
     <string name="camera_permission_denied">Sorry, you need to allow access to Camera to use this feature.</string>

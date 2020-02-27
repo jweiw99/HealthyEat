@@ -17,13 +17,17 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".Ingredient"></activity>
         <activity android:name=".RecipeAdapter" />
         <activity android:name=".RecipeInformation" />
         <activity android:name=".FoodCamDetection" />
         <activity android:name=".FoodCamera" />
         <activity android:name=".Recipe" />
         <activity android:name=".MyAccount" />
-        <activity android:name=".MainActivity" />
+        <activity
+            android:name=".MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar" />
         <activity android:name=".SplashScreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />

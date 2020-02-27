@@ -28,7 +28,7 @@ import java.io.File;
 
 import my.edu.utar.uccd3223.util.ImageFilePath;
 
-public class FoodCamera extends AppCompatActivity implements LifecycleOwner {
+public class FoodCamera extends AppCompatActivity {
 
     private ImageView takePictureButton, flash;
 
@@ -42,9 +42,6 @@ public class FoodCamera extends AppCompatActivity implements LifecycleOwner {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_food_camera);
         textureView = (TextureView) findViewById(R.id.texture);
-
-        lifecycleRegistry = new LifecycleRegistry(this);
-        lifecycleRegistry.markState(Lifecycle.State.CREATED);
 
         takePictureButton = findViewById(R.id.btn_takepicture);
 
@@ -84,18 +81,6 @@ public class FoodCamera extends AppCompatActivity implements LifecycleOwner {
             }
         }
         return;
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
-        lifecycleRegistry.markState(Lifecycle.State.STARTED);
-    }
-
-    @NonNull
-    @Override
-    public Lifecycle getLifecycle() {
-        return lifecycleRegistry;
     }
 
     private void startCamera() {

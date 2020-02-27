@@ -66,6 +66,6 @@ public class SplashScreen extends FragmentActivity {
                 startActivity(intent);
                 finish();
             }
-        }, 5000);
+        }, 3000);
     }
 }

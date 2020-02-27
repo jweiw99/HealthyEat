@@ -15,7 +15,7 @@ import my.edu.utar.uccd3223.models.RecipeTemp;
 
 public class SpoonAPI {
     // urls for API calls
-    private String url_complexRecipe = "https://spoonacular-recipe-food-nutrition-v1.p.rapidapi.com/recipes/searchComplex";
+    private String url_complexRecipe = "https://api.spoonacular.com/recipes/searchComplex";
     private String url_Recipe = "https://api.spoonacular.com/recipes/search";
     private String apiKey = "f31cc73187534697a9417c425e05366b";
     private String url_getRecipeWithID1 = "https://api.spoonacular.com/recipes/";
@@ -67,7 +67,7 @@ public class SpoonAPI {
     url_query: adds on parameters
     result: returns a list of recipe objects
      */
-    public String getRecipeComplexURL(String foods, int number, int maxCalories, String cuisine) {
+    public String getRecipeComplexURL(List<String> ingredients, int number, int maxCalories, String cuisine) {
         recipeComplex = new ArrayList<>();
         String ranking = "0";
         String offset = "0";
@@ -83,8 +83,17 @@ public class SpoonAPI {
                 + limitLicense + "&instructionsRequired=" + instructionsRequired
                 + "&cuisine=" + cuisine + "&includeIngredients=";
 
-        // add on food to url string
-        url_query += foods;
+        // add on ingredient to url string
+        if (ingredients.size() > 1) {
+            url_query += ingredients.get(0);
+            for (int i = 1; i < ingredients.size(); i++) {
+                url_query += "%2C+" + ingredients.get(i);
+            }
+        } else if (ingredients.size() == 1) {
+            url_query += ingredients.get(0);
+        }
+
+        url_query += "&apiKey=" + apiKey;
 
         return url_query;
     }
@@ -241,6 +250,18 @@ public class SpoonAPI {
                 fullIngredients.add(tempIngredient);
             }
             recipeFull.setIngredients_list(fullIngredients);
+
+
+            JSONArray instructions_json = response.getJSONArray("analyzedInstructions");
+            List<String> fullInstructions = new ArrayList<>();
+            String tempInstructions = new String();
+            instructions_json = instructions_json.getJSONObject(0).getJSONArray("steps");
+            for (int i = 0; i < instructions_json.length(); ++i) {
+                JSONObject stepInstructions = instructions_json.getJSONObject(i);
+                tempInstructions = stepInstructions.getString("step");
+                fullInstructions.add(tempInstructions);
+            }
+            recipeFull.setAnalyzedInstructions(fullInstructions);
 
             JSONObject nutritions = response.getJSONObject("nutrition");
             JSONArray nutrients = nutritions.getJSONArray("nutrients");

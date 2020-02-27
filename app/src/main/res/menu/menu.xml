@@ -10,14 +10,20 @@
         android:id="@+id/nav_fridge"
         android:icon="@drawable/ic_fridge"
         android:title="Ingredients" />
-    <item
-        android:id="@+id/nav_favorites"
-        android:icon="@drawable/ic_favorites"
-        android:title="Favorites" />
 
     <item
-        android:id="@+id/nav_account"
-        android:icon="@drawable/ic_account"
-        android:title="Account" />
+        android:id="@+id/nav_mealplan"
+        android:icon="@drawable/ic_mealplan"
+        android:title="Meal Plan" />
+
+    <item
+        android:id="@+id/nav_dashboard"
+        android:icon="@drawable/ic_dashboard"
+        android:title="DashBoard" />
+
+    <item
+        android:id="@+id/menu_none"
+        android:title=""
+        android:visible="false"/>
 
 </menu>

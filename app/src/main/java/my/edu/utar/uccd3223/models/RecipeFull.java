@@ -25,6 +25,7 @@ public class RecipeFull {
     private String healthScore;
     private String sourceName;
     private String instructions;
+    private List<String> analyzedInstructions;
     private Nutrition nutrition;
     private List<String> diets; // converts from list of map<int, string>
     private List<String> cuisines; // converts from list of map<int, string>
@@ -116,6 +117,10 @@ public class RecipeFull {
         return instructions;
     }
 
+    public List<String> getAnalyzedInstructions() {
+        return analyzedInstructions;
+    }
+
     public Nutrition getNutrition() { return nutrition; }
 
     public List<Ingredient> getIngredients_list() {
@@ -176,6 +181,10 @@ public class RecipeFull {
 
     public void setInstructions(String instructions) {
         this.instructions = instructions;
+    }
+
+    public void setAnalyzedInstructions(List<String> analyzedInstructions) {
+        this.analyzedInstructions = analyzedInstructions;
     }
 
     public void setKetogenic(boolean ketogenic) {

@@ -148,11 +148,11 @@ public class FoodCamDetection extends AppCompatActivity {
                     new FirebaseLocalModel.Builder("asset")
                             .setAssetFilePath(LOCAL_MODEL_ASSET).build();
             FirebaseModelManager manager = FirebaseModelManager.getInstance();
-            manager.registerRemoteModel(remoteModel);
+            //manager.registerRemoteModel(remoteModel);
             manager.registerLocalModel(localModel);
             FirebaseModelOptions modelOptions =
                     new FirebaseModelOptions.Builder()
-                            .setRemoteModelName(HOSTED_MODEL_NAME)
+                            //.setRemoteModelName(HOSTED_MODEL_NAME)
                             .setLocalModelName("asset")
                             .build();
             mInterpreter = FirebaseModelInterpreter.getInstance(modelOptions);

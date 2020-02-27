@@ -2,6 +2,7 @@ package my.edu.utar.uccd3223;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
@@ -17,6 +18,8 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 import my.edu.utar.uccd3223.API.SpoonAPI;
@@ -38,7 +41,6 @@ public class RecipeInformation extends AppCompatActivity {
     private TextView tv_servings;
     private TextView tv_title;
     private ImageView iv_recipeImage;
-    private Button btn_exit, btn_eat;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +52,7 @@ public class RecipeInformation extends AppCompatActivity {
     }
 
     // display recipe to user by setting the text
-    private void displayRecipeFull() {
+    private void displayRecipeFull() throws UnsupportedEncodingException {
         tv_carbs = findViewById(R.id.tv_recipeInfo_carbs);
         tv_protein = findViewById(R.id.tv_recipeInfo_protein);
         tv_calories = findViewById(R.id.tv_recipeInfo_calories);
@@ -64,24 +66,29 @@ public class RecipeInformation extends AppCompatActivity {
 
         tv_title.setText(recipeFull.getTitle());
         tv_cookingInMins.setText("Cooking time: " + recipeFull.getCookingMinutes());
+        tv_servings.setText("Servings: " + Integer.toString(recipeFull.getServings()));
+
+        List<Ingredient> ingredients_list = recipeFull.getIngredients_list();
+        String tv_ingredientstring = "Ingredients:\n";
+        for (int i = 0; i < ingredients_list.size(); ++i) {
+            Ingredient temp = ingredients_list.get(i);
+            tv_ingredientstring += temp.getName() + ": " + temp.getAmount() + " " + temp.getUnit() + "\n";
+        }
+        tv_ingredients.setText(tv_ingredientstring);
 
         tv_calories.setText("Calories: " + recipeFull.getNutrition().getCalories());
         tv_protein.setText("Protein: " + recipeFull.getNutrition().getProtein());
         tv_fat.setText("Fat: " + recipeFull.getNutrition().getFat());
         tv_carbs.setText("Carbs: " + recipeFull.getNutrition().getCarbohydrates());
-        tv_instructions.setText("Instructions:\n" + recipeFull.getInstructions());
 
-        tv_servings.setText("Servings: " + Integer.toString(recipeFull.getServings()));
 
-        List<Ingredient> ingredients_list = recipeFull.getIngredients_list();
-        String tv_string = "Ingredients:\n";
-        for (int i = 0; i < ingredients_list.size(); ++i) {
-            Ingredient temp = ingredients_list.get(i);
-            tv_string += temp.getName() + ": " + temp.getAmount() + " " + temp.getUnit() + "\n";
+        List<String> instructions_list = recipeFull.getAnalyzedInstructions();
+        String tv_instructionsstring = "Instructions:\n";
+        for (int i = 0; i < instructions_list.size(); ++i) {
+            String temp = new String(instructions_list.get(i).getBytes("ISO-8859-1"), "UTF-8");
+            tv_instructionsstring += "Step " + (i + 1) + " ： " + temp + "\n\n";
         }
-        tv_ingredients.setText(tv_string);
-
-
+        tv_instructions.setText(tv_instructionsstring);
 
         String photoURL = "https://spoonacular.com/recipeImages/" + recipeId + "-90x90.jpg";
         Picasso.with(getApplicationContext()).load(recipeFull.getImage()).fit().centerCrop()
@@ -101,7 +108,7 @@ public class RecipeInformation extends AppCompatActivity {
                         spoon.getRecipeByIDHelper(new JSONObject(response));
                         recipeFull = spoon.getRecipeFull();
                         displayRecipeFull();
-                    } catch (JSONException e) {
+                    } catch (JSONException | UnsupportedEncodingException e) {
                         e.printStackTrace();
                     }
                 }, error -> {
@@ -111,10 +118,6 @@ public class RecipeInformation extends AppCompatActivity {
     }
 
     private void changeCalories(View v) {
-
-    }
-
-    private void exit(View v){
-        finish();
+        return;
     }
 }

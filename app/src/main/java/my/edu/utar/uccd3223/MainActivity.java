@@ -1,17 +1,22 @@
 package my.edu.utar.uccd3223;
 
+import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.annotation.NonNull;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.navigation.NavigationView;
 
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 
 import android.os.Bundle;
-import android.os.Handler;
 import android.view.Gravity;
-import android.view.MenuItem;
+import android.view.Menu;
+import android.view.View;
 import android.widget.Toast;
 
 public class MainActivity extends AppCompatActivity {
@@ -19,35 +24,56 @@ public class MainActivity extends AppCompatActivity {
     private long doubleBackToExit;
     private static final int TIME_INTERVAL = 2000;
 
-    private BottomNavigationView.OnNavigationItemSelectedListener navListener =
-            new BottomNavigationView.OnNavigationItemSelectedListener() {
-                @Override
-                public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-                    Fragment selectedFragment = null;
+    private BottomNavigationView.OnNavigationItemSelectedListener buttomnavListener =
+            menuItem -> {
+                Fragment selectedFragment = null;
 
-                    switch (menuItem.getItemId()) {
-                        case R.id.nav_recipes:
-                            selectedFragment = new Recipe();
-                            break;
+                switch (menuItem.getItemId()) {
+                    case R.id.nav_recipes:
+                        selectedFragment = new Recipe();
+                        break;
 
-                        case R.id.nav_fridge:
-                            selectedFragment = new MyAccount();
-                            break;
+                    case R.id.nav_fridge:
+                        selectedFragment = new Ingredient();
+                        break;
 
-                        case R.id.nav_account:
-                            selectedFragment = new MyAccount();
-                            break;
+                    case R.id.nav_mealplan:
+                        selectedFragment = new Ingredient();
+                        break;
 
-                        case R.id.nav_favorites:
-                            selectedFragment = new MyAccount();
-                    }
+                    case R.id.nav_dashboard:
+                        selectedFragment = new MyAccount();
+                        break;
 
-                    FragmentManager fm = getSupportFragmentManager();
-
-                    fm.beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
-                    return true;
                 }
+
+                FragmentManager fm = getSupportFragmentManager();
+
+                fm.beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
+                return true;
             };
+
+    private NavigationView.OnNavigationItemSelectedListener navListener = menuitem -> {
+
+        Fragment selectedFragment = null;
+        switch (menuitem.getItemId()) {
+
+            case R.id.nav_profile: {
+                selectedFragment = new MyAccount();
+                break;
+            }
+        }
+        //close navigation drawer
+        FragmentManager fm = getSupportFragmentManager();
+
+        fm.beginTransaction().replace(R.id.fragment_container, selectedFragment).commit();
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.closeDrawer(GravityCompat.START);
+
+        unCheckAll(findViewById(R.id.menu));
+
+        return true;
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +81,29 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         BottomNavigationView bottomNav = findViewById(R.id.menu);
-        bottomNav.setOnNavigationItemSelectedListener(navListener);
+        bottomNav.setOnNavigationItemSelectedListener(buttomnavListener);
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+        DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
+        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar,0,1) {
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed(drawerView);
+            }
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened(drawerView);
+            }
+        };
+        actionBarDrawerToggle.syncState();
+
+
+        NavigationView navigationView = findViewById(R.id.nav_view);
+        navigationView.setNavigationItemSelectedListener(navListener);
+
         // start up recipeFragment with fragmentManager
         FragmentManager fm = this.getSupportFragmentManager();
 
@@ -70,6 +118,7 @@ public class MainActivity extends AppCompatActivity {
         }
         // start transaction
         fm.beginTransaction().replace(R.id.fragment_container, recipeFrag).commit();
+
     }
 
     @Override
@@ -86,4 +135,12 @@ public class MainActivity extends AppCompatActivity {
         doubleBackToExit = System.currentTimeMillis();
 
     }
+
+    public static void unCheckAll(BottomNavigationView view) {
+        int size = view.getMenu().size();
+        for (int i = 0; i < size; i++) {
+            view.getMenu().getItem(i).setChecked(false);
+        }
+    }
+
 }
