@@ -10,6 +10,7 @@ import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -190,6 +191,42 @@ public class DatabaseQuery {
         return null;
     }
 
+    public Calories getYesterdayCalories() {
+
+        DatabaseHelper databaseHelper = DatabaseHelper.getInstance(context);
+        SQLiteDatabase sqLiteDatabase = databaseHelper.getReadableDatabase();
+        final Calendar cal = Calendar.getInstance();
+        cal.add(Calendar.DATE, -1);
+
+        Cursor cursor = null;
+        try {
+
+            cursor = sqLiteDatabase.query(Config.TABLE_USER_CALORIES,
+                    new String[]{Config.COLUMN_USER_MAX_CALORIES, Config.COLUMN_USER_CALORIES_TAKEN},
+                    Config.COLUMN_USER_ID + " = ? AND " + Config.COLUMN_USER_CALORIES_DATE + " = ? ",
+                    new String[]{String.valueOf(1), new SimpleDateFormat("yyyyMMdd").format(cal.getTime())},
+                    null, null, null, null);
+
+            if (cursor != null)
+                if (cursor.moveToFirst()) {
+
+                    int max_calories = cursor.getInt(cursor.getColumnIndex(Config.COLUMN_USER_MAX_CALORIES));
+                    int calories_taken = cursor.getInt(cursor.getColumnIndex(Config.COLUMN_USER_CALORIES_TAKEN));
+
+                    Calories caloriesRec = new Calories(max_calories, calories_taken);
+                    return caloriesRec;
+                }
+        } catch (Exception e) {
+            Toast.makeText(context, "Operation failed", Toast.LENGTH_SHORT).show();
+        } finally {
+            if (cursor != null)
+                cursor.close();
+            sqLiteDatabase.close();
+        }
+
+        return null;
+    }
+
     public long updateCaloriesInfo(Calories calories) {
 
         long rowCount = 0;
@@ -237,7 +274,7 @@ public class DatabaseQuery {
     }
 
 
-    public long insertFood(Food food) {
+    public long insertFood(int food_id) {
 
         long id = -1;
         DatabaseHelper databaseHelper = DatabaseHelper.getInstance(context);
@@ -245,8 +282,8 @@ public class DatabaseQuery {
 
         ContentValues contentValues = new ContentValues();
         contentValues.put(Config.COLUMN_USER_ID, 1);
-        contentValues.put(Config.COLUMN_USER_FOOD_DATE, food.getFood_date());
-        contentValues.put(Config.COLUMN_USER_FOOD_ID, food.getFood_api_id());
+        contentValues.put(Config.COLUMN_USER_FOOD_DATE, new SimpleDateFormat("yyyyMMdd").format(new Date().getTime()));
+        contentValues.put(Config.COLUMN_USER_FOOD_ID, food_id);
 
         try {
             id = sqLiteDatabase.insertOrThrow(Config.TABLE_USER_FOOD, null, contentValues);

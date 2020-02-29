@@ -2,7 +2,6 @@ package my.edu.utar.uccd3223;
 
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.annotation.NonNull;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.google.android.material.navigation.NavigationView;
@@ -15,7 +14,6 @@ import androidx.fragment.app.FragmentManager;
 
 import android.os.Bundle;
 import android.view.Gravity;
-import android.view.Menu;
 import android.view.View;
 import android.widget.Toast;
 
@@ -42,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
                         break;
 
                     case R.id.nav_dashboard:
-                        selectedFragment = new MyAccount();
+                        selectedFragment = new Dashboard();
                         break;
 
                 }
@@ -118,6 +116,7 @@ public class MainActivity extends AppCompatActivity {
                 myAccountFrag.setArguments(args);
                 // start transaction
                 fm.beginTransaction().replace(R.id.fragment_container, myAccountFrag).commit();
+                unCheckAll(findViewById(R.id.menu));
             }else{
                 Recipe recipeFrag = new Recipe();
                 args.putString("food", bundleExtras.getString("food"));

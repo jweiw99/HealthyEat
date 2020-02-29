@@ -134,8 +134,7 @@
                 android:layout_height="55dp"
                 android:layout_marginRight="15dp"
                 android:background="@drawable/button"
-                android:text="Eat !"
-                android:onClick="changeCalories" />
+                android:text="Eat !" />
 
         </LinearLayout>
     </LinearLayout>

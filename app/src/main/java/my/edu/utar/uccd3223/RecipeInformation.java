@@ -1,13 +1,16 @@
 package my.edu.utar.uccd3223;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -20,13 +23,19 @@ import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 import my.edu.utar.uccd3223.API.SpoonAPI;
+import my.edu.utar.uccd3223.Database.DatabaseQuery;
+import my.edu.utar.uccd3223.models.Calories;
 import my.edu.utar.uccd3223.models.Ingredient;
 import my.edu.utar.uccd3223.models.RecipeFull;
 
 public class RecipeInformation extends AppCompatActivity {
+
+    private DatabaseQuery databaseQuery = new DatabaseQuery(this);
 
     private RecipeFull recipeFull;
     private String recipeId;
@@ -46,6 +55,12 @@ public class RecipeInformation extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_information);
+
+        Button _btn_eat = findViewById(R.id.btn_eat);
+
+        _btn_eat.setOnClickListener(v -> {
+            changeCalories();
+        });
 
         recipeId = getIntent().getExtras().getString("recipeId");
         handleAPICall();
@@ -117,7 +132,38 @@ public class RecipeInformation extends AppCompatActivity {
         requestQueue.add(req);
     }
 
-    private void changeCalories(View v) {
-        return;
+    private void changeCalories() {
+        int calories = recipeFull.getNutrition().getCalories();
+        Calories _calories = databaseQuery.getTodayCalories();
+        if (_calories == null) {
+            Calories _yesdaycalories = databaseQuery.getYesterdayCalories();
+            if (_yesdaycalories == null) {
+                _yesdaycalories = new Calories();
+            } else {
+                _yesdaycalories.setCalories_date(Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(new Date().getTime())));
+                _yesdaycalories.setCalories_taken(0);
+            }
+            databaseQuery.insertCalories(_yesdaycalories);
+            _calories = databaseQuery.getTodayCalories();
+        }
+        if ((_calories.getMax_calories() - _calories.getCalories_taken()) >= calories) {
+            databaseQuery.setCaloriesTaken(_calories.getCalories_taken() + calories);
+            databaseQuery.insertFood(Integer.parseInt(recipeId));
+            Toast.makeText(getApplicationContext(), "Inserted", Toast.LENGTH_SHORT).show();
+            finish();
+        } else {
+            Calories final_calories = _calories;
+            new AlertDialog.Builder(this)
+                    .setTitle("Warning")
+                    .setMessage("It is over your daily calories taken, Do you really want to continue?")
+                    .setIcon(android.R.drawable.ic_dialog_alert)
+                    .setPositiveButton(android.R.string.yes, (dialog, whichButton) -> {
+                        databaseQuery.setCaloriesTaken(final_calories.getCalories_taken() + calories);
+                        databaseQuery.insertFood(Integer.parseInt(recipeId));
+                        Toast.makeText(getApplicationContext(), "Inserted", Toast.LENGTH_SHORT).show();
+                        finish();
+                    })
+                    .setNegativeButton(android.R.string.no, null).show();
+        }
     }
 }

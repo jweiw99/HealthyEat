@@ -43,6 +43,7 @@ import java.util.List;
 
 import my.edu.utar.uccd3223.API.SpoonAPI;
 import my.edu.utar.uccd3223.models.RecipeTemp;
+import my.edu.utar.uccd3223.util.hideKeyboard;
 
 public class Ingredient extends Fragment {
 
@@ -88,7 +89,7 @@ public class Ingredient extends Fragment {
                 }
             }
             if (searchIngredient.size() > 0) {
-                hideKeyboard(getContext(),v);
+                new hideKeyboard(getContext(),v);
                 Toast.makeText(context,
                         "Hold up, fetching some delicious recipes!",
                         Toast.LENGTH_SHORT).show();
@@ -164,12 +165,5 @@ public class Ingredient extends Fragment {
         });
         requestQueue.add(req);
 
-    }
-
-    private void hideKeyboard(Context context, View view) {
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
     }
 }

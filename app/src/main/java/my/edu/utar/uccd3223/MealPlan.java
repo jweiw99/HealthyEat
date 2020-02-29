@@ -4,15 +4,12 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ListView;
@@ -30,6 +27,7 @@ import java.util.List;
 
 import my.edu.utar.uccd3223.API.SpoonAPI;
 import my.edu.utar.uccd3223.models.RecipeTemp;
+import my.edu.utar.uccd3223.util.hideKeyboard;
 
 public class MealPlan extends Fragment {
 
@@ -57,7 +55,7 @@ public class MealPlan extends Fragment {
 
         coloriesInput.setOnFocusChangeListener((v, b) -> {
             if (!b) {
-                hideKeyboard(getContext(), view);
+                new hideKeyboard(getContext(), view);
             }
         });
 
@@ -123,12 +121,5 @@ public class MealPlan extends Fragment {
         });
         requestQueue.add(req);
 
-    }
-
-    private void hideKeyboard(Context context, View view) {
-        if (view != null) {
-            InputMethodManager imm = (InputMethodManager)context.getSystemService(Context.INPUT_METHOD_SERVICE);
-            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
-        }
     }
 }

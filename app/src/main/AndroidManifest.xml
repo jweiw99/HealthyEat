@@ -16,8 +16,11 @@
         android:requestLegacyExternalStorage="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:usesCleartextTraffic="true"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:theme="@style/AppTheme">
-        <activity android:name=".MealPlan"></activity>
+        <activity android:name=".Dashboard"></activity>
+        <activity android:name=".MealPlan" />
         <activity android:name=".Ingredient" />
         <activity android:name=".RecipeAdapter" />
         <activity android:name=".RecipeInformation" />

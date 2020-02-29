@@ -15,6 +15,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,7 +28,7 @@ public class MyAccount extends Fragment implements View.OnClickListener {
 
     private DatabaseQuery databaseQuery = new DatabaseQuery(getActivity());
 
-    private User userRec ;
+    private User userRec;
     private Calories caloriesRec;
 
     int age = 0, gender = 0, weight_goal = 0, activity_level = 0;
@@ -51,14 +52,22 @@ public class MyAccount extends Fragment implements View.OnClickListener {
         Spinner temp2;
 
         userRec = databaseQuery.getUser();
-        if(userRec == null){
+        if (userRec == null) {
             databaseQuery.insertUser(new User());
             userRec = databaseQuery.getUser();
         }
 
         caloriesRec = databaseQuery.getTodayCalories();
-        if(caloriesRec == null) {
-            databaseQuery.insertCalories(new Calories());
+        if (caloriesRec == null) {
+            Calories _yesdaycalories = databaseQuery.getYesterdayCalories();
+            if (_yesdaycalories == null) {
+                _yesdaycalories = new Calories();
+                _yesdaycalories.setMax_calories((int) calculateTDEE(userRec.getWeight(), userRec.getHeight(), userRec.getAge(), userRec.getGender(), userRec.getActivity_level()));
+            } else {
+                _yesdaycalories.setCalories_date(Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(new Date().getTime())));
+                _yesdaycalories.setCalories_taken(0);
+            }
+            databaseQuery.insertCalories(_yesdaycalories);
             caloriesRec = databaseQuery.getTodayCalories();
         }
 
@@ -112,7 +121,7 @@ public class MyAccount extends Fragment implements View.OnClickListener {
                 _temp = getView().findViewById(R.id.editHeight);
                 String _height = _temp.getText().toString();
 
-                if((!_age.isEmpty() && !_weight.isEmpty() && !_height.isEmpty())){
+                if ((!_age.isEmpty() && !_weight.isEmpty() && !_height.isEmpty())) {
                     // save age in class variable
                     age = Integer.parseInt(_age);
 
@@ -121,7 +130,7 @@ public class MyAccount extends Fragment implements View.OnClickListener {
 
                     // save height in class variable
                     height = Double.parseDouble(_height);
-                }else{
+                } else {
                     Toast.makeText(getActivity(), "Invalid Input", Toast.LENGTH_SHORT).show();
                     return;
                 }
@@ -138,17 +147,18 @@ public class MyAccount extends Fragment implements View.OnClickListener {
                 Spinner spin_act = getView().findViewById(R.id.editActivityLevel);
                 activity_level = (int) spin_act.getSelectedItemId();
 
-                if(age > 0 && weight > 0 && height > 0) {
+                if (age > 0 && weight > 0 && height > 0) {
                     int TDEE = (int) calculateTDEE(weight, height, age, gender, activity_level);
 
-                    databaseQuery.updateUserInfo(new User(age,weight,height,gender,weight_goal,activity_level));
-                    databaseQuery.updateCaloriesInfo(new Calories(TDEE,TDEE));
+                    databaseQuery.updateUserInfo(new User(age, weight, height, gender, weight_goal, activity_level));
+                    Calories _calories = databaseQuery.getTodayCalories();
+                    databaseQuery.updateCaloriesInfo(new Calories(TDEE, _calories.getCalories_taken()));
 
                     TextView temp1 = getView().findViewById(R.id.calories);
                     temp1.setText(String.valueOf(TDEE));
 
                     Toast.makeText(getActivity(), "Saved", Toast.LENGTH_SHORT).show();
-                }else{
+                } else {
                     Toast.makeText(getActivity(), "Invalid Input", Toast.LENGTH_SHORT).show();
                 }
 
@@ -156,7 +166,6 @@ public class MyAccount extends Fragment implements View.OnClickListener {
     }
 
     private double calculateTDEE(double weight, double height, int age, int gender, int activity_level) {
-
 
         double weight_kg = weight * 0.453592;
         double height_cm = height * 2.54;
@@ -197,8 +206,7 @@ public class MyAccount extends Fragment implements View.OnClickListener {
         }
         if (this.weight_goal == 1) {
             return TDEE * 0.9;
-        }
-        else {
+        } else {
             return TDEE;
         }
 
