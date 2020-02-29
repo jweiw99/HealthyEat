@@ -107,18 +107,29 @@ public class MainActivity extends AppCompatActivity {
         // start up recipeFragment with fragmentManager
         FragmentManager fm = this.getSupportFragmentManager();
 
-        Recipe recipeFrag = new Recipe();
         // create arguments to be sent to recipe fragment
         Bundle args = new Bundle();
 
         Bundle bundleExtras = getIntent().getExtras();
         if (bundleExtras != null) {
-            args.putString("food", bundleExtras.getString("food"));
-            recipeFrag.setArguments(args);
+            if(getIntent().hasExtra("activity")){
+                MyAccount myAccountFrag = new MyAccount();
+                args.putString("food", bundleExtras.getString("activity"));
+                myAccountFrag.setArguments(args);
+                // start transaction
+                fm.beginTransaction().replace(R.id.fragment_container, myAccountFrag).commit();
+            }else{
+                Recipe recipeFrag = new Recipe();
+                args.putString("food", bundleExtras.getString("food"));
+                recipeFrag.setArguments(args);
+                // start transaction
+                fm.beginTransaction().replace(R.id.fragment_container, recipeFrag).commit();
+            }
+        }else{
+            Recipe recipeFrag = new Recipe();
+            // start transaction
+            fm.beginTransaction().replace(R.id.fragment_container, recipeFrag).commit();
         }
-        // start transaction
-        fm.beginTransaction().replace(R.id.fragment_container, recipeFrag).commit();
-
     }
 
     @Override

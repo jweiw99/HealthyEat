@@ -10,7 +10,12 @@ import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
+import my.edu.utar.uccd3223.Database.DatabaseQuery;
+import my.edu.utar.uccd3223.models.User;
+
 public class SplashScreen extends FragmentActivity {
+
+    private DatabaseQuery databaseQuery = new DatabaseQuery(this);
 
     private View firstView;
     private View secondView;
@@ -61,8 +66,16 @@ public class SplashScreen extends FragmentActivity {
 
             @Override
             public void run() {
-                Intent intent = new Intent(getApplicationContext(),
-                        MainActivity.class);
+                User userRec = databaseQuery.getUser();
+                Intent intent;
+                if (userRec == null) {
+                    intent = new Intent(getApplicationContext(),
+                            MainActivity.class);
+                    intent.putExtra("activity", "MyAccount");
+                } else {
+                    intent = new Intent(getApplicationContext(),
+                            MainActivity.class);
+                }
                 startActivity(intent);
                 finish();
             }
