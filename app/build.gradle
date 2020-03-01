@@ -3,7 +3,7 @@ apply plugin: 'com.google.gms.google-services'  // Google Services plugin
 
 android {
     compileSdkVersion 29
-    buildToolsVersion "29.0.2"
+    buildToolsVersion "29.0.3"
     defaultConfig {
         applicationId "my.edu.utar.uccd3223"
         minSdkVersion 21
@@ -44,4 +44,5 @@ dependencies {
     implementation 'androidx.navigation:navigation-ui:2.2.1'
     implementation 'androidx.navigation:navigation-fragment:2.2.1'
     implementation 'com.google.android.material:material:1.1.0'
+    implementation 'net.gotev:speech:1.4.0'
 }

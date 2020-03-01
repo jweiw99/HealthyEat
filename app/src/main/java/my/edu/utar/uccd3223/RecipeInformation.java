@@ -3,10 +3,7 @@ package my.edu.utar.uccd3223;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -21,8 +18,10 @@ import com.squareup.picasso.Picasso;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import net.gotev.speech.Speech;
+import net.gotev.speech.TextToSpeechCallback;
+
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -56,7 +55,34 @@ public class RecipeInformation extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe_information);
 
+        Speech.init(this, getPackageName());
         Button _btn_eat = findViewById(R.id.btn_eat);
+
+        Button speak = findViewById(R.id.btn_read);
+        speak.setOnClickListener(view -> {
+            tv_instructions = findViewById(R.id.tv_recipeInfo_instructions);
+            if (tv_instructions.getText().toString().trim().isEmpty()) {
+                Toast.makeText(this, "No instruction can be read", Toast.LENGTH_SHORT).show();
+                return;
+            }
+
+            Speech.getInstance().say(tv_instructions.getText().toString().trim(), new TextToSpeechCallback() {
+                @Override
+                public void onStart() {
+                    Toast.makeText(RecipeInformation.this, "Start Reading", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onCompleted() {
+                    Toast.makeText(RecipeInformation.this, "Completed", Toast.LENGTH_SHORT).show();
+                }
+
+                @Override
+                public void onError() {
+                    Toast.makeText(RecipeInformation.this, "Unable to Read", Toast.LENGTH_SHORT).show();
+                }
+            });
+        });
 
         _btn_eat.setOnClickListener(v -> {
             changeCalories();
@@ -64,6 +90,12 @@ public class RecipeInformation extends AppCompatActivity {
 
         recipeId = getIntent().getExtras().getString("recipeId");
         handleAPICall();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Speech.getInstance().shutdown();
     }
 
     // display recipe to user by setting the text
