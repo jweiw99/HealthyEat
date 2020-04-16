@@ -1,12 +1,10 @@
 package my.edu.utar.uccd3223;
 
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,12 +15,11 @@ import android.widget.Toast;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 
 import my.edu.utar.uccd3223.Database.DatabaseQuery;
 import my.edu.utar.uccd3223.models.Calories;
 import my.edu.utar.uccd3223.models.User;
+import my.edu.utar.uccd3223.util.TDEECalculate;
 
 public class MyAccount extends Fragment implements View.OnClickListener {
 
@@ -62,7 +59,7 @@ public class MyAccount extends Fragment implements View.OnClickListener {
             Calories _yesdaycalories = databaseQuery.getYesterdayCalories();
             if (_yesdaycalories == null) {
                 _yesdaycalories = new Calories();
-                _yesdaycalories.setMax_calories((int) calculateTDEE(userRec.getWeight(), userRec.getHeight(), userRec.getAge(), userRec.getGender(), userRec.getActivity_level()));
+                _yesdaycalories.setMax_calories((int) TDEECalculate.calculateTDEE(userRec.getWeight(), userRec.getHeight(), userRec.getAge(), userRec.getGender(), userRec.getActivity_level(),userRec.getWeight_goal()));
             } else {
                 _yesdaycalories.setCalories_date(Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(new Date().getTime())));
                 _yesdaycalories.setCalories_taken(0);
@@ -148,7 +145,7 @@ public class MyAccount extends Fragment implements View.OnClickListener {
                 activity_level = (int) spin_act.getSelectedItemId();
 
                 if (age > 0 && weight > 0 && height > 0) {
-                    int TDEE = (int) calculateTDEE(weight, height, age, gender, activity_level);
+                    int TDEE = (int) TDEECalculate.calculateTDEE(weight, height, age, gender, activity_level, weight_goal);
 
                     databaseQuery.updateUserInfo(new User(age, weight, height, gender, weight_goal, activity_level));
                     Calories _calories = databaseQuery.getTodayCalories();
@@ -163,52 +160,5 @@ public class MyAccount extends Fragment implements View.OnClickListener {
                 }
 
         }
-    }
-
-    private double calculateTDEE(double weight, double height, int age, int gender, int activity_level) {
-
-        double weight_kg = weight * 0.453592;
-        double height_cm = height * 2.54;
-        double BMR = 0;
-        double TDEE = 0;
-
-        if (gender == 0) {
-            BMR = 9.99 * weight_kg + 6.25 * height_cm - 4.92 * age + 5;
-
-            if (activity_level == 0) {
-                TDEE = BMR * 1.2;
-            } else if (activity_level == 1) {
-                TDEE = BMR * 1.375;
-            } else if (activity_level == 2) {
-                TDEE = BMR * 1.55;
-            } else if (activity_level == 3) {
-                TDEE = BMR * 1.725;
-            } else if (activity_level == 4) {
-                TDEE = BMR * 1.9;
-            }
-        } else if (gender == 1) {
-            BMR = 9.99 * weight_kg + 6.25 * height_cm - 5 - 4.92 * age - 161;
-            if (activity_level == 0) {
-                TDEE = BMR * 1.2;
-            } else if (activity_level == 1) {
-                TDEE = BMR * 1.375;
-            } else if (activity_level == 2) {
-                TDEE = BMR * 1.55;
-            } else if (activity_level == 3) {
-                TDEE = BMR * 1.725;
-            } else if (activity_level == 4) {
-                TDEE = BMR * 1.9;
-            }
-        }
-
-        if (this.weight_goal == 0) {
-            return TDEE * 1.1;
-        }
-        if (this.weight_goal == 1) {
-            return TDEE * 0.9;
-        } else {
-            return TDEE;
-        }
-
     }
 }

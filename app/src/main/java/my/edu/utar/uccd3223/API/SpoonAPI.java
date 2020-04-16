@@ -25,12 +25,18 @@ public class SpoonAPI {
     private List<RecipeTemp> recipeComplex;
     private List<RecipeTemp> recipeSimple;
     private List<RecipeTemp> mealPlan;
+    private RecipeFull recipeTaken;
     private RecipeFull recipeFull;
 
 
     // get recipeFull after helper function is finished
     public RecipeFull getRecipeFull() {
         return recipeFull;
+    }
+
+    // get receiptTaken after helper function is finished
+    public RecipeFull getRecipeTaken() {
+        return recipeTaken;
     }
 
     // get recipeSimple list of recipes when helper function is finished
@@ -132,6 +138,23 @@ public class SpoonAPI {
         }
     }
 
+    // helper function to set up recipe object for getRecipeIDURL function
+    public void getRecipeIDHelper(JSONObject response) {
+        try {
+            recipeTaken = new RecipeFull();
+            if (response.has("id")) {
+                recipeTaken.setId(response.getInt("id"));
+            }
+            if (response.has("image")) {
+                recipeTaken.setImage(response.getString("image"));
+            }
+            if (response.has("title")) {
+                recipeTaken.setTitle(response.getString("title"));
+            }
+        } catch (Exception e) {
+
+        }
+    }
 
     // helper function to set up recipe object for getRecipeURL function
     public void getMealPlanHelper(JSONObject response) {
