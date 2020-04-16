@@ -332,15 +332,16 @@ public class DatabaseQuery {
         return Collections.emptyList();
     }
 
-    public long deleteFoodByid(int food_id) {
+    public long deleteFoodByid(int food_id, int calories) {
         long deletedRowCount = -1;
         DatabaseHelper databaseHelper = DatabaseHelper.getInstance(context);
         SQLiteDatabase sqLiteDatabase = databaseHelper.getWritableDatabase();
 
         try {
             deletedRowCount = sqLiteDatabase.delete(Config.TABLE_USER_FOOD,
-                    Config.COLUMN_FOOD_ID + " = ? ",
+                    Config.COLUMN_USER_FOOD_ID + " = ? ",
                     new String[]{String.valueOf(food_id)});
+            setCaloriesTaken(calories);
         } catch (SQLiteException e) {
             Toast.makeText(context, e.getMessage(), Toast.LENGTH_LONG).show();
         } finally {

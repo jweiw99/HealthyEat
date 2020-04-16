@@ -11,7 +11,6 @@
         android:orientation="vertical">
 
         <TextView
-            android:id="@+id/tv_fragment_account"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="163dp"
@@ -97,11 +96,21 @@
 
         </LinearLayout>
 
+        <TextView
+            android:id="@+id/tv_fragment_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginTop="20dp"
+            android:textSize="16sp"
+            android:text="You have ate" />
+
         <my.edu.utar.uccd3223.util.NonScrollListView
             android:id="@+id/lv_recipe_frag"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_marginTop="20dp"
+            android:layout_marginTop="15dp"
             tools:layout_editor_absoluteX="16dp"
             tools:layout_editor_absoluteY="34dp"></my.edu.utar.uccd3223.util.NonScrollListView>
     </LinearLayout>

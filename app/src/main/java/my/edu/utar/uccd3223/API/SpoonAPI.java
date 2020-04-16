@@ -151,6 +151,21 @@ public class SpoonAPI {
             if (response.has("title")) {
                 recipeTaken.setTitle(response.getString("title"));
             }
+
+            JSONObject nutritions = response.getJSONObject("nutrition");
+            JSONArray nutrients = nutritions.getJSONArray("nutrients");
+            Nutrition tempNutrition = new Nutrition();
+            for (int i = 0; i < nutrients.length(); ++i) {
+                JSONObject tempNutrient = nutrients.getJSONObject(i);
+
+                switch (tempNutrient.getString("title")) {
+                    case "Calories":
+                        tempNutrition.setCalories(tempNutrient.getInt("amount"));
+                        break;
+                }
+            }
+            recipeTaken.setNutrition(tempNutrition);
+
         } catch (Exception e) {
 
         }

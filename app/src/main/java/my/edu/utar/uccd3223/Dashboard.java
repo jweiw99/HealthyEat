@@ -2,10 +2,12 @@ package my.edu.utar.uccd3223;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Context;
-import android.content.Intent;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -76,7 +78,7 @@ public class Dashboard extends Fragment {
             Calories _yesdaycalories = databaseQuery.getYesterdayCalories();
             if (_yesdaycalories == null) {
                 _yesdaycalories = new Calories();
-                _yesdaycalories.setMax_calories((int) TDEECalculate.calculateTDEE(userRec.getWeight(), userRec.getHeight(), userRec.getAge(), userRec.getGender(), userRec.getActivity_level(),userRec.getWeight_goal()));
+                _yesdaycalories.setMax_calories((int) TDEECalculate.calculateTDEE(userRec.getWeight(), userRec.getHeight(), userRec.getAge(), userRec.getGender(), userRec.getActivity_level(), userRec.getWeight_goal()));
             } else {
                 _yesdaycalories.setCalories_date(Integer.parseInt(new SimpleDateFormat("yyyyMMdd").format(new Date().getTime())));
                 _yesdaycalories.setCalories_taken(0);
@@ -109,11 +111,33 @@ public class Dashboard extends Fragment {
                 // information to send to recipeInformation activity
                 RecipeTemp recipe = recipeTempList.get(position);
                 String recipeId = recipe.getId();
+                String calories = recipe.getCalories();
+                Integer caloriestaken = caloriesRec.getCalories_taken() - Integer.parseInt(calories);
 
-                Bundle args = new Bundle();
-                args.putString("recipeId", recipeId);
-                startActivity(new Intent(getActivity(), RecipeInformation.class)
-                        .putExtras(args));
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+
+                builder.setTitle("Delete");
+                builder.setMessage("Are you sure to delete this?");
+
+                builder.setPositiveButton("YES", (dialog, which) -> {
+                    // Do nothing but close the dialog
+                    databaseQuery.deleteFoodByid(Integer.parseInt(recipeId),caloriestaken);
+                    dialog.dismiss();
+
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    if (Build.VERSION.SDK_INT >= 26) {
+                        ft.setReorderingAllowed(false);
+                    }
+                    ft.detach(this).attach(this).commit();
+                });
+
+                builder.setNegativeButton("NO", (dialog, which) -> {
+                    // Do nothing
+                    dialog.dismiss();
+                });
+
+                AlertDialog alert = builder.create();
+                alert.show();
             });
         } else {
             RecipeTemp recipe = new RecipeTemp();
@@ -144,6 +168,7 @@ public class Dashboard extends Fragment {
                             recipeTemp.setId(String.valueOf(recipeReceived.getId()));
                             recipeTemp.setImage(recipeReceived.getImage());
                             recipeTemp.setTitle(recipeReceived.getTitle());
+                            recipeTemp.setCalories(String.valueOf(recipeReceived.getNutrition().getCalories()));
                             recipeTempList.add(recipeTemp);
                             handleRecipeFragmentAdapter();
                         } catch (JSONException e) {
