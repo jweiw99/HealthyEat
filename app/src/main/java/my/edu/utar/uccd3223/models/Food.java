@@ -7,11 +7,17 @@ public class Food {
     private int food_id;
     private int food_date;
     private int food_api_id;
+    private String food_title;
+    private String food_image;
+    private int food_calories;
 
-    public Food(int food_id, int food_date, int food_api_id) {
+    public Food(int food_id, int food_date, int food_api_id, String food_title, String food_image, int food_calories) {
         this.food_id = food_id;
         this.food_date = food_date;
         this.food_api_id = food_api_id;
+        this.food_title = food_title;
+        this.food_image = food_image;
+        this.food_calories = food_calories;
     }
 
     public int getFood_id() {
@@ -36,5 +42,29 @@ public class Food {
 
     public void setFood_api_id(int food_api_id) {
         this.food_api_id = food_api_id;
+    }
+
+    public String getFood_title() {
+        return food_title;
+    }
+
+    public void setFood_title(String food_title) {
+        this.food_title = food_title;
+    }
+
+    public String getFood_image() {
+        return food_image;
+    }
+
+    public void setFood_image(String food_image) {
+        this.food_image = food_image;
+    }
+
+    public int getFood_calories() {
+        return food_calories;
+    }
+
+    public void setFood_calories(int food_calories) {
+        this.food_calories = food_calories;
     }
 }

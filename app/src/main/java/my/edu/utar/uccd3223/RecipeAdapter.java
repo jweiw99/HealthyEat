@@ -55,13 +55,19 @@ public class RecipeAdapter extends ArrayAdapter<RecipeTemp> {
             String info = "Calories: " + recipe.getCalories() + " Carbs: " + recipe.getCarbs() +
                     " Protein: " + recipe.getProtein() + " Fat: " + recipe.getFat();
             vh.textViewInformation.setText(info);
+        } else if (recipe.getCalories() != null) {
+            String info = "Calories: " + recipe.getCalories();
+            vh.textViewInformation.setText(info);
         }
 
         vh.textViewTitle.setText(recipe.getTitle());
 
-        String photoURL = "https://spoonacular.com/recipeImages/" + recipe.getId() + "-90x90.jpg";
-        Picasso.with(context).load(photoURL).fit().centerCrop().placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).into(vh.imageView);
-
+        if (recipe.getId() != "999999999") {
+            String photoURL = "https://spoonacular.com/recipeImages/" + recipe.getId() + "-90x90.jpg";
+            Picasso.with(context).load(photoURL).fit().centerCrop().placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).into(vh.imageView);
+        } else {
+            Picasso.with(context).load(R.mipmap.ic_launcher).fit().centerCrop().placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher).into(vh.imageView);
+        }
         return vh.rootView;
     }
 

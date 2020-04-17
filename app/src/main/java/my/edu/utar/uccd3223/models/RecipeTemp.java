@@ -1,6 +1,7 @@
 package my.edu.utar.uccd3223.models;
 
 public class RecipeTemp {
+    private String dbid;
     private String id;
     private String title;
     private String usedIngredientCount;
@@ -13,6 +14,10 @@ public class RecipeTemp {
 
     public String getId() {
         return id;
+    }
+
+    public String getdbId() {
+        return dbid;
     }
 
     public String getImage() {
@@ -29,6 +34,10 @@ public class RecipeTemp {
 
     public String getUsedIngredientCount() {
         return usedIngredientCount;
+    }
+
+    public void setdbId(String dbid) {
+        this.dbid = dbid;
     }
 
     public void setId(String id) {

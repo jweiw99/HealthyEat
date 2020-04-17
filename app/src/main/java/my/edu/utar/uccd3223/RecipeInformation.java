@@ -180,7 +180,7 @@ public class RecipeInformation extends AppCompatActivity {
         }
         if ((_calories.getMax_calories() - _calories.getCalories_taken()) >= calories) {
             databaseQuery.setCaloriesTaken(_calories.getCalories_taken() + calories);
-            databaseQuery.insertFood(Integer.parseInt(recipeId));
+            databaseQuery.insertFood(Integer.parseInt(recipeId), recipeFull.getTitle(), recipeFull.getImage(), calories);
             Toast.makeText(getApplicationContext(), "Inserted", Toast.LENGTH_SHORT).show();
             finish();
         } else {
@@ -191,7 +191,7 @@ public class RecipeInformation extends AppCompatActivity {
                     .setIcon(android.R.drawable.ic_dialog_alert)
                     .setPositiveButton(android.R.string.yes, (dialog, whichButton) -> {
                         databaseQuery.setCaloriesTaken(final_calories.getCalories_taken() + calories);
-                        databaseQuery.insertFood(Integer.parseInt(recipeId));
+                        databaseQuery.insertFood(Integer.parseInt(recipeId), recipeFull.getTitle(), recipeFull.getImage(), calories);
                         Toast.makeText(getApplicationContext(), "Inserted", Toast.LENGTH_SHORT).show();
                         finish();
                     })

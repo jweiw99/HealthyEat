@@ -274,7 +274,7 @@ public class DatabaseQuery {
     }
 
 
-    public long insertFood(int food_id) {
+    public long insertFood(int food_id, String name, String image, int calories) {
 
         long id = -1;
         DatabaseHelper databaseHelper = DatabaseHelper.getInstance(context);
@@ -284,6 +284,9 @@ public class DatabaseQuery {
         contentValues.put(Config.COLUMN_USER_ID, 1);
         contentValues.put(Config.COLUMN_USER_FOOD_DATE, new SimpleDateFormat("yyyyMMdd").format(new Date().getTime()));
         contentValues.put(Config.COLUMN_USER_FOOD_ID, food_id);
+        contentValues.put(Config.COLUMN_USER_FOOD_TITLE, name);
+        contentValues.put(Config.COLUMN_USER_FOOD_IMAGE, image);
+        contentValues.put(Config.COLUMN_USER_FOOD_CALORIES, calories);
 
         try {
             id = sqLiteDatabase.insertOrThrow(Config.TABLE_USER_FOOD, null, contentValues);
@@ -316,8 +319,11 @@ public class DatabaseQuery {
                         int food_id = cursor.getInt(cursor.getColumnIndex(Config.COLUMN_FOOD_ID));
                         int food_date = cursor.getInt(cursor.getColumnIndex(Config.COLUMN_USER_FOOD_DATE));
                         int food_api_id = cursor.getInt(cursor.getColumnIndex(Config.COLUMN_USER_FOOD_ID));
+                        String food_title = cursor.getString(cursor.getColumnIndex(Config.COLUMN_USER_FOOD_TITLE));
+                        String food_image = cursor.getString(cursor.getColumnIndex(Config.COLUMN_USER_FOOD_IMAGE));
+                        int food_calories = cursor.getInt(cursor.getColumnIndex(Config.COLUMN_USER_FOOD_CALORIES));
 
-                        foodRec.add(new Food(food_id, food_date, food_api_id));
+                        foodRec.add(new Food(food_id, food_date, food_api_id,food_title,food_image,food_calories));
                     } while (cursor.moveToNext());
                     return foodRec;
                 }
@@ -339,7 +345,7 @@ public class DatabaseQuery {
 
         try {
             deletedRowCount = sqLiteDatabase.delete(Config.TABLE_USER_FOOD,
-                    Config.COLUMN_USER_FOOD_ID + " = ? ",
+                    Config.COLUMN_FOOD_ID + " = ? ",
                     new String[]{String.valueOf(food_id)});
             setCaloriesTaken(calories);
         } catch (SQLiteException e) {

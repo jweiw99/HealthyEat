@@ -12,8 +12,11 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -36,6 +39,7 @@ import my.edu.utar.uccd3223.models.RecipeFull;
 import my.edu.utar.uccd3223.models.RecipeTemp;
 import my.edu.utar.uccd3223.models.User;
 import my.edu.utar.uccd3223.util.TDEECalculate;
+import my.edu.utar.uccd3223.util.hideKeyboard;
 
 public class Dashboard extends Fragment {
 
@@ -59,12 +63,18 @@ public class Dashboard extends Fragment {
 
         recipeList = view.findViewById(R.id.lv_recipe_frag);
 
+
         return view;
     }
 
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
 
         TextView temp;
+
+        // set it up to get user inputs
+        EditText dashboardInputFood = view.findViewById(R.id.inputFoodBox);
+        EditText dashboardInputCalories = view.findViewById(R.id.inputCaloriesBox);
+        ImageButton addButton = view.findViewById(R.id.addButton);
 
         userRec = databaseQuery.getUser();
         if (userRec == null) {
@@ -97,6 +107,48 @@ public class Dashboard extends Fragment {
         temp = getView().findViewById(R.id.caloriesneedNo);
         temp.setText(String.valueOf(caloriesRec.getMax_calories() - caloriesRec.getCalories_taken()));
 
+        addButton.setOnClickListener(v -> {
+            String foodinput = dashboardInputFood.getText().toString();
+            Integer caloriesinput = Integer.parseInt(dashboardInputCalories.getText().toString());
+
+            if (!foodinput.equals("") && caloriesinput > 0) {
+                dashboardInputFood.clearFocus();
+                dashboardInputCalories.clearFocus();
+                if ((caloriesRec.getMax_calories() - caloriesRec.getCalories_taken()) >= caloriesinput) {
+                    databaseQuery.setCaloriesTaken(caloriesRec.getCalories_taken() + caloriesinput);
+                    databaseQuery.insertFood(999999999, foodinput, "", caloriesinput);
+                    Toast.makeText(getContext(), "Inserted", Toast.LENGTH_SHORT).show();
+
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    if (Build.VERSION.SDK_INT >= 26) {
+                        ft.setReorderingAllowed(false);
+                    }
+                    ft.detach(this).attach(this).commit();
+                } else {
+                    Calories final_calories = caloriesRec;
+                    new AlertDialog.Builder(getActivity())
+                            .setTitle("Warning")
+                            .setMessage("It is over your daily calories taken, Do you really want to continue?")
+                            .setIcon(android.R.drawable.ic_dialog_alert)
+                            .setPositiveButton(android.R.string.yes, (dialog, whichButton) -> {
+                                databaseQuery.setCaloriesTaken(final_calories.getCalories_taken() + caloriesinput);
+                                databaseQuery.insertFood(999999999, foodinput, "", caloriesinput);
+                                Toast.makeText(getContext(), "Inserted", Toast.LENGTH_SHORT).show();
+                                FragmentTransaction ft = getFragmentManager().beginTransaction();
+                                if (Build.VERSION.SDK_INT >= 26) {
+                                    ft.setReorderingAllowed(false);
+                                }
+                                ft.detach(this).attach(this).commit();
+                            })
+                            .setNegativeButton(android.R.string.no, null).show();
+                }
+
+
+            } else {
+                Toast.makeText(getContext(), "Invalid Input", Toast.LENGTH_SHORT).show();
+            }
+        });
+
         retrieveRecipesWithColories();
 
     }
@@ -110,7 +162,7 @@ public class Dashboard extends Fragment {
             recipeList.setOnItemClickListener((parent, view, position, id) -> {
                 // information to send to recipeInformation activity
                 RecipeTemp recipe = recipeTempList.get(position);
-                String recipeId = recipe.getId();
+                String recipeId = recipe.getdbId();
                 String calories = recipe.getCalories();
                 Integer caloriestaken = caloriesRec.getCalories_taken() - Integer.parseInt(calories);
 
@@ -120,8 +172,7 @@ public class Dashboard extends Fragment {
                 builder.setMessage("Are you sure to delete this?");
 
                 builder.setPositiveButton("YES", (dialog, which) -> {
-                    // Do nothing but close the dialog
-                    databaseQuery.deleteFoodByid(Integer.parseInt(recipeId),caloriestaken);
+                    databaseQuery.deleteFoodByid(Integer.parseInt(recipeId), caloriestaken);
                     dialog.dismiss();
 
                     FragmentTransaction ft = getFragmentManager().beginTransaction();
@@ -158,26 +209,14 @@ public class Dashboard extends Fragment {
         foodRec = databaseQuery.getTodayFood();
 
         for (int i = 0; i < foodRec.size(); i++) {
-            String url = spoon.getRecipeIDURL(String.valueOf(foodRec.get(i).getFood_api_id()));
-            StringRequest req = new StringRequest(Request.Method.GET, url,
-                    response -> {
-                        try {
-                            spoon.getRecipeIDHelper(new JSONObject(response));
-                            RecipeTemp recipeTemp = new RecipeTemp();
-                            RecipeFull recipeReceived = spoon.getRecipeTaken();
-                            recipeTemp.setId(String.valueOf(recipeReceived.getId()));
-                            recipeTemp.setImage(recipeReceived.getImage());
-                            recipeTemp.setTitle(recipeReceived.getTitle());
-                            recipeTemp.setCalories(String.valueOf(recipeReceived.getNutrition().getCalories()));
-                            recipeTempList.add(recipeTemp);
-                            handleRecipeFragmentAdapter();
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                    }, error -> {
-
-            });
-            requestQueue.add(req);
+            RecipeTemp recipeTemp = new RecipeTemp();
+            recipeTemp.setdbId(String.valueOf(foodRec.get(i).getFood_id()));
+            recipeTemp.setId(String.valueOf(foodRec.get(i).getFood_api_id()));
+            recipeTemp.setImage(foodRec.get(i).getFood_image());
+            recipeTemp.setTitle(foodRec.get(i).getFood_title());
+            recipeTemp.setCalories(String.valueOf(foodRec.get(i).getFood_calories()));
+            recipeTempList.add(recipeTemp);
+            handleRecipeFragmentAdapter();
         }
     }
 }

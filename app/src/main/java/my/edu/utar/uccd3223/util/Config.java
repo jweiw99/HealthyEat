@@ -25,5 +25,8 @@ public class Config {
     public static final String COLUMN_FOOD_ID = "food_id";
     public static final String COLUMN_USER_FOOD_DATE = "food_date";
     public static final String COLUMN_USER_FOOD_ID = "food_api_id";
+    public static final String COLUMN_USER_FOOD_TITLE = "food_title";
+    public static final String COLUMN_USER_FOOD_IMAGE = "food_image";
+    public static final String COLUMN_USER_FOOD_CALORIES = "food_calories";
 
 }

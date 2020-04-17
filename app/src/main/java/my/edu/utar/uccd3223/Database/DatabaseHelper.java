@@ -60,7 +60,10 @@ public class DatabaseHelper extends SQLiteOpenHelper {
                 + Config.COLUMN_FOOD_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, "
                 + Config.COLUMN_USER_ID + " INTEGER, "
                 + Config.COLUMN_USER_FOOD_DATE + " INTEGER, "
-                + Config.COLUMN_USER_FOOD_ID + " INTEGER NOT NULL "
+                + Config.COLUMN_USER_FOOD_ID + " INTEGER NOT NULL, "
+                + Config.COLUMN_USER_FOOD_TITLE + " STRING, "
+                + Config.COLUMN_USER_FOOD_IMAGE + " STRING, "
+                + Config.COLUMN_USER_FOOD_CALORIES + " INTEGER "
                 + ");";
 
         db.execSQL(CREATE_USER_FOOD_TABLE);
