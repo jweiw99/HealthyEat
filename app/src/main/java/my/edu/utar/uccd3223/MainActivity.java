@@ -60,6 +60,10 @@ public class MainActivity extends AppCompatActivity {
                 selectedFragment = new MyAccount();
                 break;
             }
+            case R.id.nav_history: {
+                selectedFragment = new History();
+                break;
+            }
         }
         //close navigation drawer
         FragmentManager fm = getSupportFragmentManager();

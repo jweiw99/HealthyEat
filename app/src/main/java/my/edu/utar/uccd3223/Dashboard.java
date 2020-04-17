@@ -18,28 +18,17 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import my.edu.utar.uccd3223.API.SpoonAPI;
 import my.edu.utar.uccd3223.Database.DatabaseQuery;
 import my.edu.utar.uccd3223.models.Calories;
 import my.edu.utar.uccd3223.models.Food;
-import my.edu.utar.uccd3223.models.RecipeFull;
 import my.edu.utar.uccd3223.models.RecipeTemp;
 import my.edu.utar.uccd3223.models.User;
 import my.edu.utar.uccd3223.util.TDEECalculate;
-import my.edu.utar.uccd3223.util.hideKeyboard;
 
 public class Dashboard extends Fragment {
 
@@ -51,7 +40,6 @@ public class Dashboard extends Fragment {
     private List<RecipeTemp> recipeTempList;
     private ListView recipeList;
     private RecipeAdapter recipeAdapter;
-    private RequestQueue requestQueue;
 
     @Nullable
     @Override
@@ -160,7 +148,6 @@ public class Dashboard extends Fragment {
             recipeAdapter = new RecipeAdapter(context, recipeTempList);
             recipeList.setAdapter(recipeAdapter);
             recipeList.setOnItemClickListener((parent, view, position, id) -> {
-                // information to send to recipeInformation activity
                 RecipeTemp recipe = recipeTempList.get(position);
                 String recipeId = recipe.getdbId();
                 String calories = recipe.getCalories();
@@ -202,9 +189,6 @@ public class Dashboard extends Fragment {
     // call api with given id
     private void retrieveRecipesWithColories() {
         recipeTempList = new ArrayList<>();
-        requestQueue = Volley.newRequestQueue(getActivity());
-
-        final SpoonAPI spoon = new SpoonAPI();
 
         foodRec = databaseQuery.getTodayFood();
 

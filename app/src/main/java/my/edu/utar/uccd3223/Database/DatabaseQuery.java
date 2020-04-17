@@ -191,6 +191,40 @@ public class DatabaseQuery {
         return null;
     }
 
+    public Calories getHistoryCalories(String year, String month, String day) {
+
+        DatabaseHelper databaseHelper = DatabaseHelper.getInstance(context);
+        SQLiteDatabase sqLiteDatabase = databaseHelper.getReadableDatabase();
+
+        Cursor cursor = null;
+        try {
+
+            cursor = sqLiteDatabase.query(Config.TABLE_USER_CALORIES,
+                    new String[]{Config.COLUMN_USER_MAX_CALORIES, Config.COLUMN_USER_CALORIES_TAKEN},
+                    Config.COLUMN_USER_ID + " = ? AND " + Config.COLUMN_USER_CALORIES_DATE + " = ? ",
+                    new String[]{String.valueOf(1), (year + month + day)},
+                    null, null, null, null);
+
+            if (cursor != null)
+                if (cursor.moveToFirst()) {
+
+                    int max_calories = cursor.getInt(cursor.getColumnIndex(Config.COLUMN_USER_MAX_CALORIES));
+                    int calories_taken = cursor.getInt(cursor.getColumnIndex(Config.COLUMN_USER_CALORIES_TAKEN));
+
+                    Calories caloriesRec = new Calories(max_calories, calories_taken);
+                    return caloriesRec;
+                }
+        } catch (Exception e) {
+            Toast.makeText(context, "Operation failed", Toast.LENGTH_SHORT).show();
+        } finally {
+            if (cursor != null)
+                cursor.close();
+            sqLiteDatabase.close();
+        }
+
+        return null;
+    }
+
     public Calories getYesterdayCalories() {
 
         DatabaseHelper databaseHelper = DatabaseHelper.getInstance(context);
@@ -323,7 +357,46 @@ public class DatabaseQuery {
                         String food_image = cursor.getString(cursor.getColumnIndex(Config.COLUMN_USER_FOOD_IMAGE));
                         int food_calories = cursor.getInt(cursor.getColumnIndex(Config.COLUMN_USER_FOOD_CALORIES));
 
-                        foodRec.add(new Food(food_id, food_date, food_api_id,food_title,food_image,food_calories));
+                        foodRec.add(new Food(food_id, food_date, food_api_id, food_title, food_image, food_calories));
+                    } while (cursor.moveToNext());
+                    return foodRec;
+                }
+        } catch (Exception e) {
+            Toast.makeText(context, "Operation failed", Toast.LENGTH_SHORT).show();
+        } finally {
+            if (cursor != null)
+                cursor.close();
+            sqLiteDatabase.close();
+        }
+
+        return Collections.emptyList();
+    }
+
+    public List<Food> getHistoryFood(String year, String month, String day) {
+
+        DatabaseHelper databaseHelper = DatabaseHelper.getInstance(context);
+        SQLiteDatabase sqLiteDatabase = databaseHelper.getReadableDatabase();
+
+        Cursor cursor = null;
+        try {
+
+            cursor = sqLiteDatabase.query(Config.TABLE_USER_FOOD, null,
+                    Config.COLUMN_USER_ID + " = ? AND " + Config.COLUMN_USER_FOOD_DATE + " = ? ",
+                    new String[]{String.valueOf(1), (year + month + day)},
+                    null, null, null, null);
+
+            if (cursor != null)
+                if (cursor.moveToFirst()) {
+                    List<Food> foodRec = new ArrayList<>();
+                    do {
+                        int food_id = cursor.getInt(cursor.getColumnIndex(Config.COLUMN_FOOD_ID));
+                        int food_date = cursor.getInt(cursor.getColumnIndex(Config.COLUMN_USER_FOOD_DATE));
+                        int food_api_id = cursor.getInt(cursor.getColumnIndex(Config.COLUMN_USER_FOOD_ID));
+                        String food_title = cursor.getString(cursor.getColumnIndex(Config.COLUMN_USER_FOOD_TITLE));
+                        String food_image = cursor.getString(cursor.getColumnIndex(Config.COLUMN_USER_FOOD_IMAGE));
+                        int food_calories = cursor.getInt(cursor.getColumnIndex(Config.COLUMN_USER_FOOD_CALORIES));
+
+                        foodRec.add(new Food(food_id, food_date, food_api_id, food_title, food_image, food_calories));
                     } while (cursor.moveToNext());
                     return foodRec;
                 }
