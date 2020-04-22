@@ -181,7 +181,7 @@ public class SpoonAPI {
                 RecipeTemp recipe = new RecipeTemp();
 
                 recipe.setId(Integer.toString(recipe_object.getInt("id")));
-                recipe.setImage(recipe_object.getString("image"));
+                //recipe.setImage(recipe_object.getString("image"));
                 recipe.setTitle(recipe_object.getString("title"));
 
                 mealPlan.add(recipe);
